@@ -203,10 +203,12 @@ body::before{
   background:var(--glass);border:1px solid var(--glass-b);
   color:var(--text-dim);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  transition:all .22s;backdrop-filter:blur(12px);
+  transition:background .22s, color .22s;
+  backdrop-filter:blur(12px);
+  transform:rotate(0deg); /* 斜め固定を防止 */
 }
-.gear-btn:hover{background:var(--glass-b);color:var(--accent)}
-.gear-btn:active{transform:rotate(25deg)}
+.gear-btn:hover{background:var(--glass-b);color:var(--accent);transform:rotate(0deg)}
+.gear-btn:active{background:var(--glass-b);color:var(--accent);transform:rotate(0deg)}
 
 /* search bar */
 .search-wrap{position:relative;margin-bottom:16px}

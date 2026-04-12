@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" id="viewport">
 <title>Login Port</title>
 <link rel="apple-touch-icon" id="touch-icon">
 <script>
@@ -1862,7 +1862,8 @@ function openQR(){
   btn.style.display='none';
   btn.textContent='📷 読み取る';
   btn.style.background='';
-  /* QRモーダル中はbodyのスクロール制限を解除してピンチズーム許可 */
+  /* ピンチズーム許可：viewportとtouch-actionを両方書き換える */
+  document.getElementById('viewport').content='width=device-width, initial-scale=1.0';
   document.body.style.touchAction='pinch-zoom';
   document.getElementById('qrModal').classList.add('open');
   document.getElementById('qrStatus').textContent='カメラを起動中...';
@@ -1870,7 +1871,8 @@ function openQR(){
 }
 
 function closeQR(){
-  /* body のtouch-action を元に戻す */
+  /* viewport と touch-action を元に戻す */
+  document.getElementById('viewport').content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
   document.body.style.touchAction='pan-y';
   document.getElementById('qrModal').classList.remove('open');
   stopQRCamera();

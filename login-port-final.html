@@ -48,7 +48,6 @@ document.getElementById('touch-icon').href=c.toDataURL('image/png');
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Login Port">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-
 <style>
 :root{
   --bg-a:#04090f;--bg-b:#080f1c;--bg-c:#0c182e;
@@ -82,8 +81,7 @@ body{
   color:var(--text);
   overflow-x:hidden;
   overscroll-behavior-x:none;
-  touch-action:pan-y;
-  transition:background 0.5s;
+    transition:background 0.5s;
 }
 body::before{
   content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
@@ -635,45 +633,22 @@ body::before{
 .qr-modal.open{opacity:1;pointer-events:auto}
 .qr-modal-box{background:#080f1c;border:1px solid var(--accent-border);border-radius:22px;width:100%;max-width:320px;padding:22px 20px 20px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.7);}
 .qr-modal-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.14em;color:#fff;margin-bottom:4px;text-transform:uppercase;}
-.qr-modal-sub{font-size:.68rem;color:var(--text-dim);margin-bottom:14px;font-family:'Outfit',sans-serif}
-/* スキャンフレーム */
-.qr-scan-frame{position:relative;width:100%;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:1/1;margin-bottom:6px;touch-action:pinch-zoom;}
-#qrVideo{width:100%;height:100%;object-fit:cover;display:none;border-radius:12px;touch-action:pinch-zoom;}
+.qr-modal-sub{font-size:.68rem;color:var(--text-dim);margin-bottom:12px;font-family:'Outfit',sans-serif}
+.qr-scan-frame{position:relative;width:100%;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:1/1;margin-bottom:6px;}
+#qrVideo{width:100%;height:100%;object-fit:cover;display:none;border-radius:12px;}
 #qrCanvas{display:none}
-/* スキャンライン */
 .qr-scan-line{position:absolute;left:8%;right:8%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 8px var(--accent);animation:qrScan 2s ease-in-out infinite;display:none;}
 .qr-scan-frame.scanning .qr-scan-line{display:block;}
 @keyframes qrScan{0%{top:10%;}50%{top:85%;}100%{top:10%;}}
-/* 四隅マーカー */
 .qr-corner{position:absolute;width:22px;height:22px;border-color:var(--accent);border-style:solid;box-shadow:0 0 6px var(--accent);}
 .qr-corner.tl{top:8px;left:8px;border-width:3px 0 0 3px;border-radius:3px 0 0 0;}
 .qr-corner.tr{top:8px;right:8px;border-width:3px 3px 0 0;border-radius:0 3px 0 0;}
 .qr-corner.bl{bottom:8px;left:8px;border-width:0 0 3px 3px;border-radius:0 0 0 3px;}
 .qr-corner.br{bottom:8px;right:8px;border-width:0 3px 3px 0;border-radius:0 0 3px 0;}
-/* ステータス */
-.qr-status{font-size:.72rem;color:var(--accent);margin:4px 0 8px;font-family:'Outfit',sans-serif;min-height:18px;line-height:1.4;}
-/* 撮影ボタン */
-.qr-capture-btn{
-  width:100%;padding:14px;border-radius:13px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#fff;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:700;
-  letter-spacing:.06em;margin-bottom:8px;
-  display:none;align-items:center;justify-content:center;gap:7px;
-  transition:opacity .15s,background .2s;
-  box-shadow:0 4px 16px rgba(79,195,247,.35);
-}
+.qr-status{font-size:.72rem;color:var(--accent);margin:5px 0 8px;font-family:'Outfit',sans-serif;min-height:18px;line-height:1.4;}
+.qr-capture-btn{width:100%;padding:14px;border-radius:13px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.06em;margin-bottom:8px;display:none;align-items:center;justify-content:center;transition:opacity .15s,background .2s;box-shadow:0 4px 16px rgba(79,195,247,.35);}
 .qr-capture-btn:active{opacity:.8}
 .qr-close{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--text-dim);border-radius:12px;padding:11px;font-family:'Outfit',sans-serif;font-size:.85rem;cursor:pointer;transition:all .15s;}
-/* QR スキャンフレーム */
-.qr-scan-frame{position:relative;width:100%;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:1/1;margin-bottom:4px;}
-.qr-scan-line{position:absolute;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 8px var(--accent);animation:qrScan 2s ease-in-out infinite;display:none;}
-.qr-scan-frame.scanning .qr-scan-line{display:block;}
-@keyframes qrScan{0%{top:10%;}50%{top:85%;}100%{top:10%;}}
-.qr-corner{position:absolute;width:20px;height:20px;border-color:var(--accent);border-style:solid;box-shadow:0 0 6px var(--accent);}
-.qr-corner.tl{top:8px;left:8px;border-width:3px 0 0 3px;border-radius:3px 0 0 0;}
-.qr-corner.tr{top:8px;right:8px;border-width:3px 3px 0 0;border-radius:0 3px 0 0;}
-.qr-corner.bl{bottom:8px;left:8px;border-width:0 0 3px 3px;border-radius:0 0 0 3px;}
-.qr-corner.br{bottom:8px;right:8px;border-width:0 3px 3px 0;border-radius:0 0 3px 0;}
 
 /* TOAST */
 .toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(60px);background:rgba(4,9,16,.94);color:var(--text);padding:10px 26px;border-radius:50px;font-size:.78rem;opacity:0;transition:opacity .28s,transform .28s cubic-bezier(.34,1.56,.64,1);z-index:9998;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.5);border:1px solid var(--accent-border);backdrop-filter:blur(12px);font-family:'Outfit',sans-serif;letter-spacing:.04em;}
@@ -1877,7 +1852,7 @@ function doWebSearch(){
 }
 
 /* =====================================================
-   QR SCANNER（BarcodeDetector対応・CDN不要）
+   QR SCANNER（BarcodeDetector + ピンチズーム対応）
 ===================================================== */
 let _qrStream=null,_qrTimer=null,_qrDetected=false;
 
@@ -1887,13 +1862,16 @@ function openQR(){
   btn.style.display='none';
   btn.textContent='📷 読み取る';
   btn.style.background='';
-  document.getElementById('qrScanFrame').style.touchAction='pinch-zoom';
+  /* QRモーダル中はbodyのスクロール制限を解除してピンチズーム許可 */
+  document.body.style.touchAction='pinch-zoom';
   document.getElementById('qrModal').classList.add('open');
   document.getElementById('qrStatus').textContent='カメラを起動中...';
   startQRCamera();
 }
 
 function closeQR(){
+  /* body のtouch-action を元に戻す */
+  document.body.style.touchAction='pan-y';
   document.getElementById('qrModal').classList.remove('open');
   stopQRCamera();
 }
@@ -1904,7 +1882,8 @@ function stopQRCamera(){
   const video=document.getElementById('qrVideo');
   video.style.display='none';
   video.srcObject=null;
-  document.getElementById('qrScanFrame').classList.remove('scanning');
+  const frame=document.getElementById('qrScanFrame');
+  if(frame)frame.classList.remove('scanning');
   document.getElementById('qrCaptureBtn').style.display='none';
 }
 
@@ -1912,37 +1891,46 @@ async function startQRCamera(){
   const statusEl=document.getElementById('qrStatus');
   try{
     const stream=await navigator.mediaDevices.getUserMedia({
-      video:{facingMode:'environment',width:{ideal:1280},height:{ideal:1280}}
+      video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1920}}
     });
     _qrStream=stream;
     const video=document.getElementById('qrVideo');
     video.srcObject=stream;
     video.style.display='block';
-    document.getElementById('qrScanFrame').classList.add('scanning');
+    const frame=document.getElementById('qrScanFrame');
+    if(frame)frame.classList.add('scanning');
 
+    /* 映像が出たら撮影ボタンを表示 */
     video.onloadedmetadata=function(){
       document.getElementById('qrCaptureBtn').style.display='flex';
       statusEl.textContent='QRを枠内に合わせて「読み取る」をタップ';
     };
 
+    /* BarcodeDetectorで自動検出（iOSはvideoに直接使えないためcanvas経由） */
     if('BarcodeDetector' in window){
-      const detector=new BarcodeDetector({formats:['qr_code']});
+      const canvas=document.getElementById('qrCanvas');
+      const ctx=canvas.getContext('2d');
       _qrTimer=setInterval(async()=>{
         if(_qrDetected)return;
-        if(!video||video.readyState!==video.HAVE_ENOUGH_DATA)return;
+        if(!video||video.readyState!==video.HAVE_ENOUGH_DATA||video.videoWidth===0)return;
+        canvas.width=video.videoWidth;
+        canvas.height=video.videoHeight;
+        ctx.drawImage(video,0,0,canvas.width,canvas.height);
         try{
-          const codes=await detector.detect(video);
+          const detector=new BarcodeDetector({formats:['qr_code']});
+          const codes=await detector.detect(canvas);
           if(codes.length>0&&codes[0].rawValue){
             _qrDetected=true;
             statusEl.textContent='✅ 自動検出！';
             setTimeout(()=>handleQRResult(codes[0].rawValue),150);
           }
         }catch(e){}
-      },500);
+      },600);
     }
 
   }catch(err){
-    document.getElementById('qrScanFrame').classList.remove('scanning');
+    const frame=document.getElementById('qrScanFrame');
+    if(frame)frame.classList.remove('scanning');
     if(err.name==='NotAllowedError'){
       statusEl.textContent='⚠️ カメラのアクセスを許可してください';
     }else{
@@ -1951,6 +1939,7 @@ async function startQRCamera(){
   }
 }
 
+/* 📷 撮影ボタンで手動読み取り */
 async function qrCapture(){
   const video=document.getElementById('qrVideo');
   const canvas=document.getElementById('qrCanvas');
@@ -1962,6 +1951,12 @@ async function qrCapture(){
     return;
   }
 
+  if(!('BarcodeDetector' in window)){
+    statusEl.textContent='⚠️ iOS17以上が必要です';
+    return;
+  }
+
+  /* 現在のフレームをcanvasにキャプチャ */
   canvas.width=video.videoWidth;
   canvas.height=video.videoHeight;
   const ctx=canvas.getContext('2d');
@@ -1969,22 +1964,22 @@ async function qrCapture(){
 
   let result=null;
 
-  if('BarcodeDetector' in window){
-    try{
-      const detector=new BarcodeDetector({formats:['qr_code']});
-      const codes=await detector.detect(canvas);
-      if(codes.length>0)result=codes[0].rawValue;
-    }catch(e){}
+  /* ① canvasから直接検出 */
+  try{
+    const detector=new BarcodeDetector({formats:['qr_code']});
+    const codes=await detector.detect(canvas);
+    if(codes.length>0)result=codes[0].rawValue;
+  }catch(e){}
 
-    if(!result){
-      try{
-        const blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',0.95));
-        const bmp=await createImageBitmap(blob);
-        const detector=new BarcodeDetector({formats:['qr_code']});
-        const codes=await detector.detect(bmp);
-        if(codes.length>0)result=codes[0].rawValue;
-      }catch(e){}
-    }
+  /* ② 失敗したらImageBitmapに変換して再試行 */
+  if(!result){
+    try{
+      const bmp=await createImageBitmap(canvas);
+      const detector=new BarcodeDetector({formats:['qr_code']});
+      const codes=await detector.detect(bmp);
+      if(codes.length>0)result=codes[0].rawValue;
+      bmp.close();
+    }catch(e){}
   }
 
   if(result){
@@ -1993,9 +1988,10 @@ async function qrCapture(){
     statusEl.textContent='✅ 読み取り成功！';
     setTimeout(()=>handleQRResult(result),200);
   }else{
+    /* 失敗フィードバック */
     btn.textContent='❌ 読み取れませんでした';
     btn.style.background='rgba(248,113,113,.5)';
-    statusEl.textContent='もっと近づけるか、明るい場所で再度タップ';
+    statusEl.textContent='QRに近づけるか明るい場所で再度タップ';
     setTimeout(()=>{
       btn.textContent='📷 読み取る';
       btn.style.background='';

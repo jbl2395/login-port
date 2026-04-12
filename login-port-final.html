@@ -580,18 +580,21 @@ body::before{
 .lock-error{font-size:.73rem;color:#f87171;min-height:18px;margin-bottom:12px;font-family:'Outfit',sans-serif;letter-spacing:.04em}
 .lock-unlock-btn{width:100%;background:transparent;border:1px solid rgba(79,195,247,.38);border-radius:14px;padding:14px;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:1rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);cursor:pointer;transition:border-color .22s;backdrop-filter:blur(8px);position:relative;overflow:hidden;margin-bottom:9px;}
 .lock-cancel-btn{width:100%;background:none;border:none;color:var(--text-dim);font-family:'Outfit',sans-serif;font-size:.8rem;cursor:pointer;padding:8px;transition:color .18s;letter-spacing:.04em;}
+.auth-mode-btn{padding:5px 11px;border-radius:20px;font-size:.72rem;font-family:'Outfit',sans-serif;font-weight:600;border:1px solid var(--accent-border);cursor:pointer;background:transparent;color:var(--text-dim);transition:background .15s,color .15s,border-color .15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.auth-mode-btn.active{background:var(--accent);color:#000;border-color:var(--accent);}
+.auth-mode-btn:active{opacity:.7;}
 
 /* =====================================================
    SETTINGS MODAL
 ===================================================== */
 .modal-overlay{position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s;}
 .modal-overlay.open{opacity:1;pointer-events:auto}
-.modal-box{background:#080f1c;border:1px solid rgba(255,255,255,.09);border-radius:22px;width:100%;max-width:420px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.65);transform:translateY(22px);transition:transform .28s cubic-bezier(.34,1.56,.64,1);}
+.modal-box{background:#080f1c;border:1px solid rgba(255,255,255,.09);border-radius:22px;width:100%;max-width:420px;max-height:88vh;overflow:visible;box-shadow:0 24px 64px rgba(0,0,0,.65);transform:translateY(22px);transition:transform .28s cubic-bezier(.34,1.56,.64,1);display:flex;flex-direction:column;}
 .modal-overlay.open .modal-box{transform:translateY(0)}
 .modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 16px;border-bottom:1px solid rgba(255,255,255,.07);}
 .modal-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.05rem;color:#fff;letter-spacing:.12em;text-transform:uppercase;}
 .modal-close{background:none;border:none;cursor:pointer;width:30px;height:30px;border-radius:8px;color:var(--text-dim);font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.modal-body{padding:20px 22px}
+.modal-body{padding:20px 22px;overflow-y:auto;flex:1;border-radius:0 0 22px 22px;}
 .modal-section{margin-bottom:24px}
 .modal-section-title{font-size:.68rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.14em;margin-bottom:11px;font-family:'Outfit',sans-serif;}
 .theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
@@ -10921,7 +10924,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
       </svg>
     </div>
     <div class="lock-brand">Login<span>Port</span></div>
-    <div class="lock-desc">Enter Passcode to Continue</div>
+    <div class="lock-desc" id="lockDesc">Enter Passcode to Continue</div>
     <div class="lock-dots" id="lockDots">
       <div class="lock-dot"></div><div class="lock-dot"></div>
       <div class="lock-dot"></div><div class="lock-dot"></div>
@@ -10929,7 +10932,8 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     <input class="lock-input" type="password" id="lockInput" placeholder="passcode"
       maxlength="20" oninput="updateDots()" onkeydown="if(event.key==='Enter')unlockApp()">
     <div class="lock-error" id="lockError"></div>
-    <button class="lock-unlock-btn" onclick="unlockApp()">Unlock</button>
+    <button class="lock-unlock-btn" id="lockUnlockBtn" onclick="unlockApp()">Unlock</button>
+    <button class="lock-unlock-btn" id="lockFaceBtn" onclick="triggerFaceID()" style="display:none;background:linear-gradient(135deg,rgba(99,102,241,.35),rgba(139,92,246,.35));border-color:rgba(139,92,246,.5);">🔒 Face ID で認証</button>
     <button class="lock-cancel-btn" onclick="closeLockOverlay()">キャンセル</button>
   </div>
 </div>
@@ -10958,6 +10962,16 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
       <div class="modal-section">
         <div class="modal-section-title">🔐 セキュリティ</div>
         <div class="io-btns">
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:13px 15px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+              <span class="io-btn-icon">🔒</span>
+              <div><div style="font-family:'Outfit',sans-serif;font-size:.86rem;font-weight:500;color:var(--text);">認証方式</div><div class="io-btn-sub">Login Vault のロック解除方法</div></div>
+            </div>
+            <div style="display:flex;gap:8px;padding-left:34px;">
+              <button id="authModePinBtn"  class="auth-mode-btn" onclick="setAuthMode('pin')">PIN</button>
+              <button id="authModeFaceBtn" class="auth-mode-btn" onclick="setAuthMode('face')">Face ID</button>
+            </div>
+          </div>
           <button class="io-btn" onclick="changePasswordFromSettings()">
             <span class="io-btn-icon">🔑</span>
             <div><div>パスワードを変更する</div><div class="io-btn-sub">Login Vault のロック解除パスワード</div></div>
@@ -11083,7 +11097,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 <div class="member-panel" id="memberPanel">
   <div class="member-panel-handle"></div>
   <div class="member-panel-header">
-    <div class="member-panel-title">🎫 メンバーズカード</div>
+    <div class="member-panel-title">🎟 会員系</div>
     <button class="member-panel-close" onclick="closeMemberPanel()">✕</button>
   </div>
   <div class="member-panel-service">
@@ -12214,14 +12228,96 @@ document.getElementById('qrModal').addEventListener('click',function(e){if(e.tar
 ===================================================== */
 const DEFAULT_PASS='1234';
 function getStoredPass(){return localStorage.getItem('lp_lock_pass')||DEFAULT_PASS;}
+function getAuthMode(){return localStorage.getItem('lp_auth_mode')||'pin';}
+function setAuthMode(mode){
+  localStorage.setItem('lp_auth_mode',mode);
+  updateAuthModeUI();
+  /* Face ID選択時にクレデンシャル登録を試みる */
+  if(mode==='face') registerFaceID();
+}
+function updateAuthModeUI(){
+  const mode=getAuthMode();
+  const pinBtn=document.getElementById('authModePinBtn');
+  const faceBtn=document.getElementById('authModeFaceBtn');
+  if(!pinBtn||!faceBtn)return;
+  pinBtn.classList.toggle('active', mode==='pin');
+  faceBtn.classList.toggle('active', mode==='face');
+}
+/* 認証ボタンのイベントはDOMReady後にaddEventListenerで登録 */
+/* WebAuthn: クレデンシャル登録（Face ID有効化） */
+async function registerFaceID(){
+  if(!window.PublicKeyCredential){
+    alert('このブラウザはFace IDに対応していません');
+    setAuthMode('pin');return;
+  }
+  try{
+    const challenge=new Uint8Array(32);crypto.getRandomValues(challenge);
+    const cred=await navigator.credentials.create({publicKey:{
+      challenge,
+      rp:{name:'LoginPort',id:location.hostname},
+      user:{id:new Uint8Array(16),name:'user',displayName:'LoginPort User'},
+      pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+      authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required'},
+      timeout:60000
+    }});
+    /* credentialIdをlocalStorageに保存 */
+    const idB64=btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+    localStorage.setItem('lp_face_cred_id',idB64);
+    toast('✅ Face IDを登録しました');
+  }catch(e){
+    if(e.name!=='NotAllowedError')toast('⚠️ Face ID登録に失敗しました');
+    localStorage.setItem('lp_auth_mode','pin');
+    updateAuthModeUI();
+  }
+}
+
+/* WebAuthn: Face ID認証 */
+async function triggerFaceID(){
+  const err=document.getElementById('lockError');
+  err.textContent='';
+  if(!window.PublicKeyCredential){err.textContent='Face IDに対応していません';return;}
+  const credIdB64=localStorage.getItem('lp_face_cred_id');
+  if(!credIdB64){err.textContent='Face IDが未登録です。設定から登録してください。';return;}
+  try{
+    const challenge=new Uint8Array(32);crypto.getRandomValues(challenge);
+    const credId=Uint8Array.from(atob(credIdB64),c=>c.charCodeAt(0));
+    await navigator.credentials.get({publicKey:{
+      challenge,
+      allowCredentials:[{type:'public-key',id:credId}],
+      userVerification:'required',
+      timeout:60000,
+      rpId:location.hostname
+    }});
+    /* 認証成功 */
+    document.getElementById('lockOverlay').classList.remove('open');
+    err.textContent='';
+    if(_lockCallback){_lockCallback();_lockCallback=null;}
+  }catch(e){
+    if(e.name==='NotAllowedError'){err.textContent='Face ID認証がキャンセルされました';}
+    else{err.textContent='Face ID認証に失敗しました';}
+  }
+}
+
 let _lockCallback=null;
 function openLockOverlay(cb){
   _lockCallback=cb;
   document.getElementById('lockInput').value='';
   document.getElementById('lockError').textContent='';
   updateDots();
+  const mode=getAuthMode();
+  const isFace=mode==='face'&&!!localStorage.getItem('lp_face_cred_id');
+  /* PIN/Face IDに応じてUI切り替え */
+  document.getElementById('lockDesc').textContent=isFace?'Face IDで認証してください':'Enter Passcode to Continue';
+  document.getElementById('lockDots').style.display=isFace?'none':'flex';
+  document.getElementById('lockInput').style.display=isFace?'none':'block';
+  document.getElementById('lockUnlockBtn').style.display=isFace?'none':'block';
+  document.getElementById('lockFaceBtn').style.display=isFace?'block':'none';
   document.getElementById('lockOverlay').classList.add('open');
-  setTimeout(()=>document.getElementById('lockInput').focus(),220);
+  if(isFace){
+    setTimeout(()=>triggerFaceID(),300);
+  }else{
+    setTimeout(()=>document.getElementById('lockInput').focus(),220);
+  }
 }
 function closeLockOverlay(){document.getElementById('lockOverlay').classList.remove('open');_lockCallback=null;}
 function updateDots(){
@@ -12254,8 +12350,17 @@ function changePassword(){
 /* =====================================================
    SETTINGS MODAL
 ===================================================== */
-function openSettings(){document.getElementById('settingsModal').classList.add('open');renderThemeGrid();}
-function closeSettings(){document.getElementById('settingsModal').classList.remove('open');}
+function openSettings(){
+  document.getElementById('settingsModal').classList.add('open');
+  renderThemeGrid();
+  updateAuthModeUI();
+}
+function closeSettings(){
+  document.getElementById('settingsModal').classList.remove('open');
+  const layer=document.getElementById('authModeLayer');
+  if(layer)layer.style.display='none';
+}
+function closeSettings_old_removed(){}
 document.getElementById('settingsModal').addEventListener('click',function(e){if(e.target===this)closeSettings();});
 function openVaultWithLock(){openLockOverlay(()=>{openVaultPage();});}
 
@@ -12304,7 +12409,7 @@ const DEFAULT_CATEGORIES=[
   {id:'device',  label:'💻 端末系',           icon:'💻',fields:['端末名','PIN','パスワード','Apple ID / Googleアカウント','ログインURL','備考']},
   {id:'work',    label:'🔑 社内ログイン系',   icon:'🔑',fields:['システム名','社員No.','ユーザー名','パスワード','ログインURL','備考']},
   {id:'creative',label:'🎨 クリエイティブ系', icon:'🎨',fields:['サービス名','メールアドレス','ライセンスキー','パスワード','ログインURL','備考']},
-  {id:'member',  label:'🎫 メンバーズカード系',icon:'🎫',fields:['店舗・サービス名','会員番号','会員名','電話番号','備考'],type:'member'},
+  {id:'kaiinsys',label:'🎟 会員系',            icon:'🎟',fields:['サービス名','会員番号','ユーザーID','メールアドレス','パスワード','備考'],type:'member'},
 ];
 const SENSITIVE=['パスワード','PIN','カード番号','口座番号','番号','ライセンスキー','社員No.'];
 function loadCatMeta(){try{return JSON.parse(localStorage.getItem('lp_cats')||'null');}catch{return null;}}
@@ -12616,7 +12721,22 @@ function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'});}
 window.addEventListener('load',function(){
   const t=localStorage.getItem('lp_theme')||'ocean';
   if(t!=='ocean')document.documentElement.dataset.theme=t;
-  if(!loadCatMeta())saveCatMeta(DEFAULT_CATEGORIES);
+  if(!loadCatMeta()){
+    saveCatMeta(DEFAULT_CATEGORIES);
+  } else {
+    /* マイグレーション：メンバーズカード系→会員系へ統合 */
+    let cats=loadCatMeta();
+    let changed=false;
+    /* 旧 member カテゴリを削除 */
+    const filtered=cats.filter(c=>c.id!=='member');
+    if(filtered.length!==cats.length){cats=filtered;changed=true;}
+    /* kaiinsys がなければ末尾に追加 */
+    if(!cats.find(c=>c.id==='kaiinsys')){
+      cats.push({id:'kaiinsys',label:'🎟 会員系',icon:'🎟',fields:['サービス名','会員番号','ユーザーID','メールアドレス','パスワード','備考'],type:'member'});
+      changed=true;
+    }
+    if(changed)saveCatMeta(cats);
+  }
   renderAll();
 });
 

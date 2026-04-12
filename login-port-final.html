@@ -638,8 +638,19 @@ body::before{
 .qr-modal-sub{font-size:.7rem;color:var(--text-dim);margin-bottom:17px;font-family:'Outfit',sans-serif}
 #qrVideo{width:100%;height:100%;border-radius:12px;background:#000;object-fit:cover;display:none;}
 #qrCanvas{display:none}
-.qr-status{font-size:.76rem;color:var(--accent);margin:11px 0;font-family:'Outfit',sans-serif;min-height:18px}
-.qr-close{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--text-dim);border-radius:12px;padding:11px;font-family:'Outfit',sans-serif;font-size:.85rem;cursor:pointer;transition:all .15s;margin-top:4px;}
+.qr-status{font-size:.76rem;color:var(--accent);margin:8px 0 4px;font-family:'Outfit',sans-serif;min-height:18px}
+.qr-capture-btn{
+  width:100%;padding:15px;border-radius:14px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;
+  letter-spacing:.06em;margin-bottom:10px;margin-top:4px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:opacity .15s;
+  box-shadow:0 4px 18px rgba(79,195,247,.35);
+}
+.qr-capture-btn:active{opacity:.8;transform:scale(.98)}
+.qr-capture-icon{font-size:1.2rem}
+.qr-close{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--text-dim);border-radius:12px;padding:11px;font-family:'Outfit',sans-serif;font-size:.85rem;cursor:pointer;transition:all .15s;}
 /* QR スキャンフレーム */
 .qr-scan-frame{position:relative;width:100%;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:1/1;margin-bottom:4px;}
 .qr-scan-line{position:absolute;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 8px var(--accent);animation:qrScan 2s ease-in-out infinite;display:none;}
@@ -970,6 +981,9 @@ body::before{
     </div>
     <canvas id="qrCanvas"></canvas>
     <div class="qr-status" id="qrStatus">カメラを起動中...</div>
+    <button class="qr-capture-btn" id="qrCaptureBtn" onclick="qrCapture()" style="display:none">
+      <span class="qr-capture-icon">📷</span> 読み取る
+    </button>
     <button class="qr-close" onclick="closeQR()">閉じる</button>
   </div>
 </div>
@@ -1194,4 +1208,1446 @@ const SERVICE_DB = [
   {name:'SoftBank ID',  aliases:['そふとばんく','ソフトバンク','soft'],                        url:'https://id.softbank.jp/',                      cat:'device', icon:'💻'},
   {name:'au ID',        aliases:['えーゆー','エーユー','auid'],                              url:'https://id.auone.jp/',                         cat:'device', icon:'💻'},
   {name:'楽天モバイル',  aliases:['らくてんもばいる','ラクテンモバイル','rakm'],               url:'https://network.mobile.rakuten.co.jp/my-rakuten-mobile/', cat:'device', icon:'💻'},
-  {name:'マイナポータル',aliases:['まいな','マイナ','main'],                                  url:'https://myna.go.jp/',                  
+  {name:'マイナポータル',aliases:['まいな','マイナ','main'],                                  url:'https://myna.go.jp/',                          cat:'device', icon:'💻'},
+
+  /* 🎨 クリエイティブ系 */
+  {name:'Adobe',        aliases:['あどび','アドビ','adob'],                                  url:'https://auth.services.adobe.com/',             cat:'creative', icon:'🎨'},
+  {name:'Canva',        aliases:['きゃんば','キャンバ','canv'],                              url:'https://www.canva.com/login',                  cat:'creative', icon:'🎨'},
+  {name:'Figma',        aliases:['ふぃぐま','フィグマ','figm'],                              url:'https://www.figma.com/login',                  cat:'creative', icon:'🎨'},
+  {name:'GitHub',       aliases:['ぎっとはぶ','ギットハブ','gith'],                          url:'https://github.com/login',                     cat:'creative', icon:'🎨'},
+  {name:'ChatGPT',      aliases:['ちゃっとじーぴーてぃー','チャットGPT','chat'],              url:'https://chat.openai.com/auth/login',           cat:'creative', icon:'🎨'},
+  {name:'Notion',       aliases:['のーしょん','ノーション','noti'],                           url:'https://www.notion.so/login',                  cat:'creative', icon:'🎨'},
+  {name:'Dropbox',      aliases:['どろっぷぼっくす','ドロップボックス','drop'],               url:'https://www.dropbox.com/login',                cat:'creative', icon:'🎨'},
+  {name:'Slack',        aliases:['すらっく','スラック','slac'],                              url:'https://slack.com/signin',                     cat:'creative', icon:'🎨'},
+  {name:'Zoom',         aliases:['ずーむ','ズーム','zoom'],                                  url:'https://zoom.us/signin',                       cat:'creative', icon:'🎨'},
+
+  /* 🎬 動画・音楽・エンタメ */
+  {name:'Netflix',      aliases:['ねっとふりっくす','ネットフリックス','netf'],               url:'https://www.netflix.com/jp/',                  cat:'shopping', icon:'🎬'},
+  {name:'Amazon Prime', aliases:['ぷらいむ','プライム','prim'],                              url:'https://www.amazon.co.jp/',                    cat:'shopping', icon:'🎬'},
+  {name:'Disney+',      aliases:['でぃずにー','ディズニー','disn'],                           url:'https://www.disneyplus.com/ja-jp/',             cat:'shopping', icon:'🎬'},
+  {name:'Hulu',         aliases:['ふーるー','フールー','hulu'],                              url:'https://www.hulu.jp/',                         cat:'shopping', icon:'🎬'},
+  {name:'U-NEXT',       aliases:['ゆーねくすと','ユーネクスト','unex'],                       url:'https://video.unext.jp/',                      cat:'shopping', icon:'🎬'},
+  {name:'Spotify',      aliases:['すぽてぃふぁい','スポティファイ','spot'],                   url:'https://open.spotify.com/',                    cat:'shopping', icon:'🎬'},
+  {name:'Apple Music',  aliases:['あっぷるみゅーじっく','アップルミュージック','appm'],        url:'https://music.apple.com/jp/',                  cat:'shopping', icon:'🎬'},
+
+  /* 🍜 フード・デリバリー */
+  {name:'UberEats',     aliases:['うーばーいーつ','ウーバーイーツ','uber'],                  url:'https://www.ubereats.com/jp',                  cat:'shopping', icon:'🍜'},
+  {name:'出前館',        aliases:['でまえかん','でまえ','dema'],                             url:'https://demae-can.com/',                       cat:'shopping', icon:'🍜'},
+  {name:'楽天デリバリー',aliases:['らくてんでりばりー','ラクテンデリバリー','rakd'],           url:'https://delivery.rakuten.co.jp/',              cat:'shopping', icon:'🍜'},
+
+  /* ✈️ 旅行・交通 */
+  {name:'じゃらん',      aliases:['じゃらん','ジャラン','jara'],                             url:'https://www.jalan.net/',                       cat:'shopping', icon:'✈️'},
+  {name:'楽天トラベル',  aliases:['らくてんとらべる','ラクテントラベル','rakt'],              url:'https://travel.rakuten.co.jp/',                cat:'shopping', icon:'✈️'},
+  {name:'一休.com',     aliases:['いっきゅう','イッキュウ','ikky'],                          url:'https://www.ikyu.com/',                        cat:'shopping', icon:'✈️'},
+  {name:'ANAマイレージ', aliases:['えーえぬえー','エーエヌエー','anam'],                      url:'https://www.ana.co.jp/',                       cat:'shopping', icon:'✈️'},
+  {name:'JALマイレージ', aliases:['じゃる','ジャル','jalm'],                                url:'https://www.jal.co.jp/',                       cat:'shopping', icon:'✈️'},
+  {name:'Suicaアプリ',  aliases:['すいか','スイカ','suic'],                                 url:'https://www.jrepoint.jp/',                     cat:'shopping', icon:'✈️'},
+
+  /* 🏥 医療・行政 */
+  {name:'マイナポータル',aliases:['まいなぽーたる','マイナポータル','main'],                  url:'https://myna.go.jp/',                          cat:'idcard', icon:'🪪'},
+  {name:'e-Tax',        aliases:['いーたっくす','イータックス','etax'],                      url:'https://www.e-tax.nta.go.jp/',                cat:'idcard', icon:'🪪'},
+
+  /* 🛒 買い物系（追加） */
+  {name:'クロネコヤマト', aliases:['くろねこ','クロネコ','ヤマト','やまと','kuro'],           url:'https://www.kuronekoyamato.co.jp/',            cat:'shopping', icon:'🐱'},
+  {name:'セカイモン',    aliases:['せかいもん','セカイモン','sekai'],                         url:'https://www.sekaimon.com/',                    cat:'shopping', icon:'🌍'},
+  {name:'Discogs',      aliases:['でぃすこぐす','ディスコグス','disc'],                       url:'https://www.discogs.com/',                     cat:'shopping', icon:'🎵'},
+  {name:'サウンドハウス',aliases:['さうんどはうす','サウンドハウス','saun'],                   url:'https://www.soundhouse.co.jp/',                cat:'shopping', icon:'🎸'},
+  {name:'ハイファイ堂',  aliases:['はいふぁいどう','ハイファイドウ','haif'],                   url:'https://www.hifido.co.jp/',                    cat:'shopping', icon:'📻'},
+  {name:'ハードオフ',    aliases:['はーどおふ','ハードオフ','hard'],                          url:'https://netmall.hardoff.co.jp/',               cat:'shopping', icon:'♻️'},
+  {name:'モノタロウ',    aliases:['ものたろう','モノタロウ','mono'],                          url:'https://www.monotaro.com/',                    cat:'shopping', icon:'🔧'},
+  {name:'ジョーシンWEB', aliases:['じょーしん','ジョーシン','josh'],                          url:'https://joshinweb.jp/',                        cat:'shopping', icon:'🏪'},
+  {name:'ジャパネット',  aliases:['じゃぱねっと','ジャパネット','japa'],                       url:'https://www.japanet.co.jp/',                   cat:'shopping', icon:'📺'},
+
+  /* 💳 金融系（追加） */
+  {name:'はぴeみる電',   aliases:['はぴいみるでん','関電','かんでん','hapi'],                  url:'https://kepco.jp/miruden/servicetop/login',    cat:'finance', icon:'⚡'},
+  {name:'PayPal',       aliases:['ぺいぱる','ペイパル','payl'],                              url:'https://www.paypal.com/jp/signin',             cat:'finance', icon:'💳'},
+  {name:'vpass',        aliases:['ぶいぱす','ブイパス','vpas'],                              url:'https://www.smbc-card.com/mem/index.jsp',      cat:'finance', icon:'💳'},
+  {name:'紀陽銀行',      aliases:['きよう','キヨウ','きようぎんこう','kiyo'],                  url:'https://www.parasol.anser.ne.jp/ib/index.do?PT=BS&CCT0080=0163', cat:'finance', icon:'🏦'},
+  {name:'PayPay銀行',   aliases:['ぺいぺいぎんこう','ペイペイギンコウ','ppbank'],             url:'https://login.paypay-bank.co.jp/wctx/LoginAction.do', cat:'finance', icon:'🏦'},
+  {name:'GMOあおぞらネット銀行', aliases:['じーえむおー','あおぞら','GMO','gmobank'],         url:'https://sso.gmo-aozora.com/b2c/login',        cat:'finance', icon:'🏦'},
+];
+
+/* =====================================================
+   カテゴリカラーパレット
+===================================================== */
+const CAT_GLASS=[
+  {tint:'rgba(74,222,128,',  accent:'#4ade80', text:'#a7f3c4', border:'rgba(74,222,128,'},
+  {tint:'rgba(251,191,36,',  accent:'#fbbf24', text:'#fde68a', border:'rgba(251,191,36,'},
+  {tint:'rgba(248,113,113,', accent:'#f87171', text:'#fecaca', border:'rgba(248,113,113,'},
+  {tint:'rgba(96,165,250,',  accent:'#60a5fa', text:'#bfdbfe', border:'rgba(96,165,250,'},
+  {tint:'rgba(167,139,250,', accent:'#a78bfa', text:'#ddd6fe', border:'rgba(167,139,250,'},
+  {tint:'rgba(251,146,60,',  accent:'#fb923c', text:'#fed7aa', border:'rgba(251,146,60,'},
+  {tint:'rgba(34,211,238,',  accent:'#22d3ee', text:'#a5f3fc', border:'rgba(34,211,238,'},
+  {tint:'rgba(244,114,182,', accent:'#f472b6', text:'#fbcfe8', border:'rgba(244,114,182,'},
+];
+function getCG(i){return CAT_GLASS[i%CAT_GLASS.length];}
+
+/* =====================================================
+   PAGE NAV
+===================================================== */
+function openVaultPage(){
+  document.getElementById('homePage').classList.remove('active');
+  document.getElementById('vaultPage').classList.add('active');
+  document.getElementById('vaultFooter').classList.add('visible');
+  requestAnimationFrame(()=>collapseAllEntries());
+}
+function closeVaultPage(){
+  document.getElementById('vaultPage').classList.remove('active');
+  document.getElementById('homePage').classList.add('active');
+  document.getElementById('vaultFooter').classList.remove('visible');
+  window.scrollTo(0,0);
+}
+function collapseAllEntries(){
+  const si=document.getElementById('searchInput');
+  if(si)si.value='';
+  document.querySelectorAll('.cat-card').forEach(c=>{c.classList.remove('hidden');c.classList.add('collapsed');});
+  document.querySelectorAll('.cat-body').forEach(b=>{b.classList.remove('hidden');b.classList.add('collapsed-body');});
+  document.querySelectorAll('.entry-body').forEach(e=>e.classList.remove('open'));
+  document.querySelectorAll('.entry-name').forEach(n=>n.classList.remove('opened'));
+  document.querySelectorAll('.entry-card').forEach(c=>c.classList.remove('hidden'));
+  document.querySelectorAll('.inline-edit-form').forEach(f=>f.classList.remove('open'));
+  document.querySelectorAll('.add-form').forEach(f=>f.classList.remove('open'));
+  window.scrollTo(0,0);
+}
+
+/* =====================================================
+   ホーム検索（ドロップダウン）
+===================================================== */
+let _bannerEntry=null;
+
+function onHomeSearch(){
+  const q=document.getElementById('webSearchInput').value.trim();
+  const dd=document.getElementById('searchDropdown');
+  const wrap=document.getElementById('searchWrap');
+  if(!q){dd.innerHTML='';wrap.classList.remove('has-dropdown');return;}
+
+  /* 1. 登録済みエントリを検索 */
+  const cats=getCats();const data=loadData();
+  const registered=[];
+  cats.forEach(cat=>{
+    (data[cat.id]||[]).forEach((entry,i)=>{
+      const text=Object.values(entry).join(' ')+' '+cat.label;
+      if(fuzzyMatch(text,q)){
+        registered.push({cat,entry,i});
+      }
+    });
+  });
+
+  /* 2. サービス辞書を検索（組み込み＋カスタム） - 前方一致 */
+  const qL=q.toLowerCase();
+  const qH=toH(qL);
+  const qK=toK(qL);
+
+  function dictStartsWith(token){
+    /* name:プレフィックスつきトークン */
+    if(token.startsWith('name:')){
+      const v=token.slice(5);
+      const vH=toH(v);
+      return v.startsWith(qL)||v.startsWith(qH)||v.startsWith(qK)||vH.startsWith(qL)||vH.startsWith(qH);
+    }
+    if(token.startsWith('alias:')){
+      const v=token.slice(6);
+      if(/^[a-z0-9]+$/.test(v))return false; /* 英字のみaliasは除外 */
+      const vH=toH(v);
+      return v.startsWith(qL)||v.startsWith(qH)||v.startsWith(qK)||vH.startsWith(qL)||vH.startsWith(qH);
+    }
+    return false;
+  }
+
+  const knownMatches=getFullServiceDB().filter(s=>{
+    const nameToken='name:'+s.name.toLowerCase();
+    const aliasTokens=(s.aliases||[]).map(a=>'alias:'+a.toLowerCase());
+    const allTokens=[nameToken,...aliasTokens];
+    return allTokens.some(t=>dictStartsWith(t))
+      && !registered.some(r=>fuzzyMatch(r.entry[r.cat.fields[0]]||'',s.name));
+  }).slice(0,5);
+
+  /* 何もなければドロップダウン非表示 */
+  if(!registered.length&&!knownMatches.length){
+    dd.innerHTML='';wrap.classList.remove('has-dropdown');return;
+  }
+
+  /* 候補が1件だけの場合は自動でランチャーを開く */
+  const totalMatches = registered.length + knownMatches.length;
+  if(totalMatches===1){
+    dd.innerHTML='';wrap.classList.remove('has-dropdown');
+    if(registered.length===1){
+      const {cat,entry,i}=registered[0];
+      ddOpenRegistered(encodeURIComponent(JSON.stringify({catId:cat.id,idx:i})));
+    } else {
+      const s=knownMatches[0];
+      ddOpenKnown(encodeURIComponent(s.url),encodeURIComponent(s.name));
+    }
+    return;
+  }
+
+  let html='';
+
+  if(registered.length){
+    html+=`<div class="dd-section-label">🔓 登録済み</div>`;
+    registered.slice(0,5).forEach(({cat,entry,i})=>{
+      const name=esc(entry[cat.fields[0]]||'(無題)');
+      const url=findUrl(entry);
+      const idField=findIdField(cat,entry);
+      const pwField=findPwField(cat,entry);
+      const entryJson=encodeURIComponent(JSON.stringify({catId:cat.id,idx:i}));
+      html+=`<div class="dd-item" onclick="ddOpenRegistered('${entryJson}')">
+        <div class="dd-item-icon registered">${cat.icon}</div>
+        <div class="dd-item-texts">
+          <div class="dd-item-name">${name}</div>
+          <div class="dd-item-sub">${idField?esc(idField):'登録済み'} ${url?'・'+esc(url.replace(/^https?:\/\//,'').split('/')[0]):''}</div>
+        </div>
+        <span class="dd-item-badge reg">ログイン</span>
+      </div>`;
+    });
+  }
+
+  if(knownMatches.length){
+    html+=`<div class="dd-section-label">🌐 ログインページへ</div>`;
+    knownMatches.forEach(s=>{
+      html+=`<div class="dd-item" onclick="ddOpenKnown('${encodeURIComponent(s.url)}','${encodeURIComponent(s.name)}')">
+        <div class="dd-item-icon known">${s.icon}</div>
+        <div class="dd-item-texts">
+          <div class="dd-item-name">${esc(s.name)}</div>
+          <div class="dd-item-sub">${esc(s.url.replace(/^https?:\/\//,'').split('/')[0])}</div>
+        </div>
+        <span class="dd-item-badge go">→ 開く</span>
+      </div>`;
+    });
+  }
+
+  /* Google検索フォールバック */
+  html+=`<div class="dd-item" onclick="ddGoogleSearch()">
+    <div class="dd-item-icon known">🔍</div>
+    <div class="dd-item-texts">
+      <div class="dd-item-name">「${esc(q)}」でGoogle検索</div>
+      <div class="dd-item-sub">ログインページを探す</div>
+    </div>
+    <span class="dd-item-badge search">検索</span>
+  </div>`;
+
+  dd.innerHTML=html;
+  wrap.classList.add('has-dropdown');
+}
+
+function onHomeSearchKey(e){
+  if(e.key==='Enter'){
+    closeDropdown();
+    doWebSearch();
+  }
+  if(e.key==='Escape'){closeDropdown();}
+}
+
+function closeDropdown(){
+  document.getElementById('searchDropdown').innerHTML='';
+  document.getElementById('searchWrap').classList.remove('has-dropdown');
+}
+
+/* 登録済みエントリをタップ */
+function ddOpenRegistered(entryJson){
+  closeDropdown();
+  const {catId,idx}=JSON.parse(decodeURIComponent(entryJson));
+  const cat=getCats().find(c=>c.id===catId);
+  const entry=getData(catId)[idx];
+  if(!cat||!entry)return;
+
+  /* メンバー系はシンプルパネル */
+  if(cat.type==='member'||cat.id==='member'){
+    openMemberPanel(catId,idx);
+    return;
+  }
+
+  const siteName=entry[cat.fields[0]]||'(無題)';
+  const url=findUrl(entry)||'';
+  const fields=[];
+  cat.fields.forEach(f=>{
+    if(!entry[f])return;
+    fields.push({label:f, value:entry[f], sensitive:SENSITIVE.includes(f)});
+  });
+  openLauncher(siteName, url, cat.icon, fields);
+}
+
+/* 既知サービスのログインページへ */
+function ddOpenKnown(encodedUrl,encodedName){
+  closeDropdown();
+  const url=decodeURIComponent(encodedUrl);
+  const name=decodeURIComponent(encodedName);
+  /* 登録済みエントリを探す */
+  const {fields,icon}=findRegisteredFields(name);
+  openLauncher(name, url, icon||'🔗', fields);
+}
+
+/* Google検索フォールバック */
+function ddGoogleSearch(){
+  const q=document.getElementById('webSearchInput').value.trim();
+  closeDropdown();
+  window.open('https://www.google.com/search?q='+encodeURIComponent(q+' ログイン'),'_blank');
+}
+
+/* エントリからURL・ID・PWを探す */
+/* サービス名でVaultの登録済みフィールドを探す */
+function findRegisteredFields(name){
+  const cats=getCats(); const data=loadData();
+  for(const cat of cats){
+    const entries=data[cat.id]||[];
+    for(const entry of entries){
+      const entryName=entry[cat.fields[0]]||'';
+      if(fuzzyMatch(entryName, name)||fuzzyMatch(name, entryName)){
+        const fields=[];
+        cat.fields.forEach(f=>{
+          if(!entry[f])return;
+          fields.push({label:f, value:entry[f], sensitive:SENSITIVE.includes(f)});
+        });
+        return {fields, icon:cat.icon};
+      }
+    }
+  }
+  return {fields:[], icon:'🔗'};
+}
+
+function findUrl(entry){
+  for(const v of Object.values(entry)){
+    if(typeof v==='string'&&/^https?:\/\//i.test(v))return v;
+  }
+  return null;
+}
+function findIdField(cat,entry){
+  const idKeys=['ユーザーID','ユーザー名','メールアドレス','社員No.','番号','口座番号','カード番号'];
+  for(const k of idKeys){if(entry[k])return entry[k];}
+  /* fieldsの先頭以外で値があるもの */
+  for(const f of cat.fields.slice(1)){if(entry[f]&&!SENSITIVE.includes(f))return entry[f];}
+  return null;
+}
+function findPwField(cat,entry){
+  const pwKeys=['パスワード','PIN','ライセンスキー'];
+  for(const k of pwKeys){if(entry[k])return entry[k];}
+  return null;
+}
+
+/* =====================================================
+   アプリURLスキーム辞書
+===================================================== */
+/* アプリ対応サービス（Universal Links方式 - 通常URLを開くとアプリが自動起動） */
+/* =====================================================
+   メンバーカードパネル
+===================================================== */
+function openMemberPanel(catId, idx){
+  const cat=getCats().find(c=>c.id===catId);
+  const entry=getData(catId)[idx];
+  if(!cat||!entry)return;
+
+  document.getElementById('memberPanelIcon').textContent=cat.icon||'🎫';
+  document.getElementById('memberPanelName').textContent=entry[cat.fields[0]]||'(無題)';
+
+  const container=document.getElementById('memberPanelFields');
+  container.innerHTML='';
+  cat.fields.forEach(f=>{
+    if(!entry[f])return;
+    const row=document.createElement('div');
+    row.className='member-panel-field';
+    const safe=entry[f].replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    row.innerHTML=`
+      <div class="member-panel-field-label">${esc(f)}</div>
+      <div class="member-panel-field-value">${esc(entry[f])}</div>
+      <button class="member-copy-btn" onclick="memberCopy('${safe}','${esc(f)}')">コピー</button>`;
+    container.appendChild(row);
+  });
+
+  document.getElementById('memberPanel').classList.add('show');
+}
+function closeMemberPanel(){document.getElementById('memberPanel').classList.remove('show');}
+function memberCopy(val,label){navigator.clipboard.writeText(val).then(()=>toast(`${label}をコピーしました`));}
+
+const APP_SUPPORTED = new Set([
+  'Amazon','Amazon Prime','楽天市場','楽天Pay','楽天カード','楽天トラベル',
+  'メルカリ','メルペイ','PayPay','PayPayフリマ','LINE','LINE Pay',
+  'Twitter / X','Instagram','Facebook','TikTok','YouTube',
+  'Spotify','Netflix','Disney+','Hulu','U-NEXT','Apple Music',
+  'UberEats','出前館','Google','Apple ID','iCloud',
+  'docomo ID','au Pay','d払い','ヤフオク','Yahoo!ショッピング',
+  'じゃらん','ANAマイレージ','JALマイレージ','Suicaアプリ',
+  'モノタロウ','ハードオフ','Slack','Zoom','Dropbox','GitHub','Notion',
+  'au ID','SoftBank ID','楽天モバイル',
+]);
+
+let _launcherUrl='';
+
+function openLauncher(siteName, siteUrl, siteIcon, fields){
+  _launcherUrl = siteUrl;
+
+  document.getElementById('launcherIcon').textContent = siteIcon||'🔗';
+  document.getElementById('launcherName').textContent = siteName;
+  document.getElementById('launcherUrl').textContent  = siteUrl ? siteUrl.replace(/^https?:\/\//,'').split('/')[0] : '';
+
+  const container = document.getElementById('launcherFields');
+  container.innerHTML = '';
+
+  if(!fields || !fields.length){
+    container.innerHTML = `<div style="text-align:center;color:var(--text-dim);font-size:.8rem;padding:8px 0;font-family:'Outfit',sans-serif">Login Vaultに登録情報がありません<br><span style="font-size:.72rem;opacity:.6">Vaultに登録するとここに表示されます</span></div>`;
+  } else {
+    fields.forEach(f=>{
+      const row = document.createElement('div');
+      row.className = 'launcher-field';
+      const isMasked = f.sensitive;
+      const safeVal = esc(f.value);
+      const rawVal  = f.value;
+      row.innerHTML = `
+        <div class="launcher-field-label">${esc(f.label)}</div>
+        <div class="launcher-field-value${isMasked?' masked':''}" data-raw="${rawVal.replace(/"/g,'&quot;')}" data-masked="${isMasked?'1':'0'}">
+          ${isMasked ? '••••••' : safeVal}
+        </div>
+        <div class="launcher-field-btns">
+          ${isMasked?`<button class="launcher-toggle-btn" onclick="launcherToggle(this)">表示</button>`:''}
+          <button class="launcher-copy-btn" onclick="launcherCopy('${rawVal.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}','${esc(f.label)}')">コピー</button>
+        </div>`;
+      container.appendChild(row);
+    });
+  }
+
+  /* アプリ案内リセット */
+  document.getElementById('launcherAppNotice').classList.remove('show');
+  _launcherAppStoreUrl='';
+
+  /* アプリボタン：アプリ対応サービスの場合のみ表示 */
+  const appRow = document.getElementById('launcherAppRow');
+  const appBtn = document.getElementById('launcherAppBtn');
+  if(APP_SUPPORTED.has(siteName)){
+    appRow.style.display='block';
+    appBtn.textContent = `📱 ${siteName}アプリで開く`;
+  } else {
+    appRow.style.display='none';
+  }
+
+  /* 先にランチャーを表示してから背面モーダルを閉じる */
+  document.getElementById('launcherPanel').classList.add('show');
+  setTimeout(()=>{
+    document.getElementById('dictModal').classList.remove('open');
+    document.getElementById('settingsModal').classList.remove('open');
+    closeDropdown();
+  }, 50);
+}
+
+function closeLauncher(){
+  document.getElementById('launcherPanel').classList.remove('show');
+}
+
+function launcherGo(){
+  if(!_launcherUrl){toast('URLが設定されていません');return;}
+  const w = window.open(_launcherUrl,'_blank');
+  if(!w) window.location.href = _launcherUrl;
+}
+
+function launcherGoWithId(){
+  if(!_launcherUrl){toast('URLが設定されていません');return;}
+
+  /* IDフィールドを探してコピー */
+  const idLabels=['ユーザーID','ユーザー名','メールアドレス','社員No.','番号'];
+  let copied=false;
+  const rows=document.querySelectorAll('#launcherFields .launcher-field');
+  for(const row of rows){
+    const label=row.querySelector('.launcher-field-label')?.textContent||'';
+    if(idLabels.includes(label)){
+      const val=row.querySelector('.launcher-field-value')?.dataset.raw||'';
+      if(val){
+        navigator.clipboard.writeText(val).then(()=>{
+          toast('📋 IDをコピー → サイトを開きます（PWは戻ってコピーを）');
+        });
+        copied=true;
+        break;
+      }
+    }
+  }
+  if(!copied && rows.length>0){
+    /* IDフィールドが特定できない場合は最初の非センシティブフィールドをコピー */
+    for(const row of rows){
+      if(row.querySelector('.launcher-field-value')?.dataset.masked==='0'){
+        const val=row.querySelector('.launcher-field-value')?.dataset.raw||row.querySelector('.launcher-field-value')?.textContent||'';
+        if(val){
+          navigator.clipboard.writeText(val).then(()=>{
+            toast('📋 IDをコピー → サイトを開きます');
+          });
+          copied=true;
+          break;
+        }
+      }
+    }
+  }
+  if(!copied) toast('📋 登録情報なし → サイトを開きます');
+
+  /* ランチャーは閉じずにサイトを開く（戻ってきたらPWコピー用） */
+  const w = window.open(_launcherUrl,'_blank');
+  if(!w) window.location.href = _launcherUrl;
+}
+
+function launcherCopy(val, label){
+  navigator.clipboard.writeText(val).then(()=>toast(`${label}をコピーしました`));
+}
+
+function launcherToggle(btn){
+  const valEl = btn.closest('.launcher-field').querySelector('.launcher-field-value');
+  if(valEl.dataset.masked==='1'){
+    if(valEl.classList.contains('masked')){
+      valEl.textContent = valEl.dataset.raw;
+      valEl.classList.remove('masked');
+      btn.textContent = '非表示';
+    } else {
+      valEl.textContent = '••••••';
+      valEl.classList.add('masked');
+      btn.textContent = '表示';
+    }
+  }
+}
+
+function launcherCopyAll(){
+  const rows = document.querySelectorAll('#launcherFields .launcher-field');
+  let text='';
+  rows.forEach(row=>{
+    const label = row.querySelector('.launcher-field-label').textContent;
+    const val   = row.querySelector('.launcher-field-value').dataset.raw || row.querySelector('.launcher-field-value').textContent;
+    text += `${label}: ${val}\n`;
+  });
+  if(text) navigator.clipboard.writeText(text.trim()).then(()=>toast('全フィールドをコピーしました'));
+}
+
+/* 旧バナー互換 */
+let _bannerData={id:null,pw:null};
+function showPwBanner(siteName,id,pw){_bannerData={id,pw};}
+function hidePwBanner(){document.getElementById('pwBanner').classList.remove('show');}
+function bannerCopyId(){if(_bannerData.id)navigator.clipboard.writeText(_bannerData.id).then(()=>toast('IDをコピーしました'));}
+function bannerCopyPw(){if(_bannerData.pw)navigator.clipboard.writeText(_bannerData.pw).then(()=>toast('PWをコピーしました'));}
+
+/* 画面外タップでドロップダウンを閉じる */
+document.addEventListener('click',function(e){
+  const wrap=document.getElementById('searchWrap');
+  if(!wrap.contains(e.target))closeDropdown();
+});
+
+/* =====================================================
+   THEMES
+===================================================== */
+const THEMES=[
+  {id:'ocean',   label:'🌊 Ocean',   grad:['#04090f','#080f1c','#122040']},
+  {id:'hotpink', label:'💗 Pink',    grad:['#08020e','#120418','#300050']},
+  {id:'coral',   label:'🔥 Coral',   grad:['#0e0400','#1a0800','#400e00']},
+  {id:'gold',    label:'✨ Gold',    grad:['#0c0800','#181200','#361e00']},
+  {id:'lime',    label:'💚 Lime',    grad:['#010a04','#021408','#043820']},
+  {id:'violet',  label:'💜 Violet',  grad:['#060010','#0c0020','#200050']},
+  {id:'crimson', label:'❤️ Crimson', grad:['#0e0008','#1c0010','#3a0020']},
+  {id:'midnight',label:'🌙 Night',   grad:['#000002','#03030c','#080818']},
+];
+function applyTheme(id){
+  document.documentElement.dataset.theme=id==='ocean'?'':id;
+  localStorage.setItem('lp_theme',id);renderThemeGrid();
+}
+function renderThemeGrid(){
+  const cur=localStorage.getItem('lp_theme')||'ocean';
+  const g=document.getElementById('themeGrid');g.innerHTML='';
+  THEMES.forEach(t=>{
+    const sw=document.createElement('button');
+    sw.className='theme-swatch'+(cur===t.id?' active':'');
+    sw.style.background=`linear-gradient(135deg,${t.grad[0]},${t.grad[2]})`;
+    sw.title=t.label;sw.textContent=t.label;sw.onclick=()=>applyTheme(t.id);
+    g.appendChild(sw);
+  });
+}
+
+/* =====================================================
+   WEB SEARCH (fallback)
+===================================================== */
+function doWebSearch(){
+  const val=document.getElementById('webSearchInput').value.trim();
+  if(!val)return;
+
+  /* URLの場合はそのまま開く */
+  if(/^https?:\/\//i.test(val)){window.open(val,'_blank');return;}
+  if(/^[\w-]+\.[a-z]{2,}/i.test(val)){window.open('https://'+val,'_blank');return;}
+
+  /* サービス辞書で前方一致検索 */
+  const qL=val.toLowerCase();
+  const qH=toH(qL);const qK=toK(qL);
+  const matches=getFullServiceDB().filter(s=>{
+    const nameToken='name:'+s.name.toLowerCase();
+    const aliasTokens=(s.aliases||[]).map(a=>'alias:'+a.toLowerCase());
+    return [nameToken,...aliasTokens].some(t=>{
+      if(t.startsWith('name:')){const v=t.slice(5);const vH=toH(v);return v.startsWith(qL)||v.startsWith(qH)||v.startsWith(qK)||vH.startsWith(qL)||vH.startsWith(qH);}
+      if(t.startsWith('alias:')){const v=t.slice(6);if(/^[a-z0-9]+$/.test(v))return false;const vH=toH(v);return v.startsWith(qL)||v.startsWith(qH)||v.startsWith(qK)||vH.startsWith(qL)||vH.startsWith(qH);}
+      return false;
+    });
+  });
+
+  if(matches.length===1){
+    /* 1件ヒット → ランチャーを開く（Universal LinksでアプリかWebが自動選択される） */
+    const s=matches[0];
+    closeDropdown();
+    const {fields,icon}=findRegisteredFields(s.name);
+    openLauncher(s.name,s.url,s.icon||icon,fields);
+    return;
+  }
+
+  /* 複数 or 0件 → Google検索 */
+  window.open('https://www.google.com/search?q='+encodeURIComponent(val+' ログイン'),'_blank');
+}
+let _launcherAppStoreUrl='';
+function launcherOpenAppStore(){
+  if(_launcherAppStoreUrl) window.open(_launcherAppStoreUrl,'_blank');
+}
+
+function launcherOpenApp(){
+  if(!_launcherUrl){toast('URLが設定されていません');return;}
+  /* IDをコピー */
+  const idLabels=['ユーザーID','ユーザー名','メールアドレス','社員No.'];
+  const rows=document.querySelectorAll('#launcherFields .launcher-field');
+  for(const row of rows){
+    const label=row.querySelector('.launcher-field-label')?.textContent||'';
+    if(idLabels.includes(label)){
+      const val=row.querySelector('.launcher-field-value')?.dataset.raw||'';
+      if(val){navigator.clipboard.writeText(val);}
+      break;
+    }
+  }
+  /* Universal Links：https URLを開くとアプリが自動起動 */
+  toast('📱 アプリを起動します（IDをコピー済み）');
+  const w = window.open(_launcherUrl,'_blank');
+  if(!w) window.location.href = _launcherUrl;
+}
+
+/* 検索ボタン：1件ヒットでランチャーを開く */
+function doWebSearch(){
+  const val=document.getElementById('webSearchInput').value.trim();
+  if(!val)return;
+  if(/^https?:\/\//i.test(val)){window.open(val,'_blank');return;}
+  if(/^[\w-]+\.[a-z]{2,}/i.test(val)){window.open('https://'+val,'_blank');return;}
+
+  /* 1. まずVaultの全エントリを検索（メンバー系含む） */
+  const cats=getCats(); const data=loadData();
+  const vaultMatches=[];
+  cats.forEach(cat=>{
+    (data[cat.id]||[]).forEach((entry,i)=>{
+      const text=Object.values(entry).join(' ')+' '+cat.label;
+      if(fuzzyMatch(text,val)){
+        vaultMatches.push({cat,entry,i});
+      }
+    });
+  });
+
+  if(vaultMatches.length===1){
+    const {cat,entry,i}=vaultMatches[0];
+    closeDropdown();
+    /* メンバー系はメンバーパネル */
+    if(cat.type==='member'||cat.id==='member'){
+      openMemberPanel(cat.id,i);
+    } else {
+      ddOpenRegistered(encodeURIComponent(JSON.stringify({catId:cat.id,idx:i})));
+    }
+    return;
+  }
+
+  /* 2. 辞書から前方一致検索 */
+  const qL=val.toLowerCase(); const qH=toH(qL); const qK=toK(qL);
+  const dictMatches=getFullServiceDB().filter(s=>{
+    const nameToken='name:'+s.name.toLowerCase();
+    const aliasTokens=(s.aliases||[]).map(a=>'alias:'+a.toLowerCase());
+    return [nameToken,...aliasTokens].some(t=>{
+      if(t.startsWith('name:')){const v=t.slice(5);const vH=toH(v);return v.startsWith(qL)||v.startsWith(qH)||v.startsWith(qK)||vH.startsWith(qL)||vH.startsWith(qH);}
+      if(t.startsWith('alias:')){const v=t.slice(6);if(/^[a-z0-9]+$/.test(v))return false;const vH=toH(v);return v.startsWith(qL)||v.startsWith(qH)||v.startsWith(qK)||vH.startsWith(qL)||vH.startsWith(qH);}
+      return false;
+    });
+  });
+
+  if(dictMatches.length===1){
+    const s=dictMatches[0]; closeDropdown();
+    const {fields,icon}=findRegisteredFields(s.name);
+    openLauncher(s.name,s.url,s.icon||icon,fields);
+    return;
+  }
+
+  /* 3. どちらもヒットしない → Google検索 */
+  window.open('https://www.google.com/search?q='+encodeURIComponent(val+' ログイン'),'_blank');
+}
+
+/* =====================================================
+   QR SCANNER
+===================================================== */
+let qrStream=null,qrTimer=null,_qrDetected=false,_qrAutoTimer=null;
+
+function openQR(){
+  _qrDetected=false;
+  document.getElementById('qrModal').classList.add('open');
+  document.getElementById('qrStatus').textContent='カメラを起動中...';
+  document.getElementById('qrCaptureBtn').style.display='none';
+  startCamera();
+}
+function closeQR(){
+  document.getElementById('qrModal').classList.remove('open');
+  stopCamera();
+}
+function stopCamera(){
+  if(qrTimer){clearInterval(qrTimer);qrTimer=null;}
+  if(_qrAutoTimer){clearTimeout(_qrAutoTimer);_qrAutoTimer=null;}
+  if(qrStream){qrStream.getTracks().forEach(t=>t.stop());qrStream=null;}
+  const video=document.getElementById('qrVideo');
+  video.style.display='none';
+  video.srcObject=null;
+  document.getElementById('qrScanFrame').classList.remove('scanning');
+  document.getElementById('qrCaptureBtn').style.display='none';
+}
+
+/* 撮影ボタンで手動読み取り */
+function qrCapture(){
+  const video=document.getElementById('qrVideo');
+  const canvas=document.getElementById('qrCanvas');
+  if(!video||video.readyState!==video.HAVE_ENOUGH_DATA){
+    toast('カメラの準備中です...');return;
+  }
+  canvas.width=video.videoWidth;
+  canvas.height=video.videoHeight;
+  const ctx=canvas.getContext('2d');
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+  const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+
+  if(typeof jsQR==='undefined'){toast('ライブラリ読み込み中...');return;}
+
+  /* まず標準で試す */
+  let code=jsQR(imageData.data,imageData.width,imageData.height,{inversionAttempts:'dontInvert'});
+  /* ダメなら反転も試す */
+  if(!code||!code.data){
+    code=jsQR(imageData.data,imageData.width,imageData.height,{inversionAttempts:'attemptBoth'});
+  }
+
+  if(code&&code.data){
+    _qrDetected=true;
+    handleQRResult(code.data);
+  }else{
+    /* 読み取り失敗フィードバック */
+    const btn=document.getElementById('qrCaptureBtn');
+    const orig=btn.innerHTML;
+    btn.innerHTML='❌ 読み取れませんでした';
+    btn.style.background='rgba(248,113,113,.3)';
+    setTimeout(()=>{
+      btn.innerHTML=orig;
+      btn.style.background='';
+    },1200);
+    document.getElementById('qrStatus').textContent='QRコードを枠内に合わせて再度タップ';
+  }
+}
+
+async function startCamera(){
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:'environment',width:{ideal:1280},height:{ideal:1280}}
+    });
+    qrStream=stream;
+    const video=document.getElementById('qrVideo');
+    video.srcObject=stream;video.style.display='block';
+    document.getElementById('qrScanFrame').classList.add('scanning');
+
+    /* カメラ起動後1秒で撮影ボタンを表示 */
+    setTimeout(()=>{
+      document.getElementById('qrCaptureBtn').style.display='flex';
+      document.getElementById('qrStatus').textContent='QRコードを枠に合わせて「読み取る」をタップ';
+    },1000);
+
+    const canvas=document.getElementById('qrCanvas');
+    const ctx=canvas.getContext('2d');
+
+    /* バックグラウンドで自動検出も継続（明確なQRなら自動で反応） */
+    qrTimer=setInterval(()=>{
+      if(_qrDetected)return;
+      if(!video||video.readyState!==video.HAVE_ENOUGH_DATA)return;
+      if(video.videoWidth===0||video.videoHeight===0)return;
+      canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+      ctx.drawImage(video,0,0,canvas.width,canvas.height);
+      const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+      if(typeof jsQR==='undefined')return;
+      const code=jsQR(imageData.data,imageData.width,imageData.height,{inversionAttempts:'dontInvert'});
+      if(code&&code.data){
+        _qrDetected=true;
+        /* 自動検出成功 */
+        document.getElementById('qrStatus').textContent='✅ 自動検出！';
+        setTimeout(()=>handleQRResult(code.data),200);
+      }
+    },500);
+
+  }catch(err){
+    document.getElementById('qrScanFrame').classList.remove('scanning');
+    if(err.name==='NotAllowedError'){document.getElementById('qrStatus').textContent='カメラのアクセスが拒否されました';}
+    else if(err.name==='NotFoundError'){document.getElementById('qrStatus').textContent='カメラが見つかりません';}
+    else{document.getElementById('qrStatus').textContent='カメラへのアクセスに失敗しました';}
+  }
+}
+
+function handleQRResult(text){
+  stopCamera();closeQR();
+  if(/^https?:\/\//i.test(text)){
+    toast('✅ QR読み取り完了 → 移動します');
+    setTimeout(()=>{const w=window.open(text,'_blank');if(!w)window.location.href=text;},300);
+  }else{
+    document.getElementById('webSearchInput').value=text;
+    toast('✅ QR: '+text);
+    onHomeSearch();
+  }
+}
+document.getElementById('qrModal').addEventListener('click',function(e){if(e.target===this)closeQR();});
+
+/* =====================================================
+   LOCK OVERLAY
+===================================================== */
+const DEFAULT_PASS='1234';
+function getStoredPass(){return localStorage.getItem('lp_lock_pass')||DEFAULT_PASS;}
+let _lockCallback=null;
+function openLockOverlay(cb){
+  _lockCallback=cb;
+  document.getElementById('lockInput').value='';
+  document.getElementById('lockError').textContent='';
+  updateDots();
+  document.getElementById('lockOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('lockInput').focus(),220);
+}
+function closeLockOverlay(){document.getElementById('lockOverlay').classList.remove('open');_lockCallback=null;}
+function updateDots(){
+  const val=document.getElementById('lockInput').value;
+  const len=Math.min(val.length,4);
+  document.querySelectorAll('.lock-dot').forEach((d,i)=>d.classList.toggle('filled',i<len));
+}
+function unlockApp(){
+  const input=document.getElementById('lockInput').value;
+  const err=document.getElementById('lockError');
+  if(!input){err.textContent='パスワードを入力してください';return;}
+  if(input===getStoredPass()){
+    document.getElementById('lockOverlay').classList.remove('open');
+    err.textContent='';
+    if(_lockCallback){_lockCallback();_lockCallback=null;}
+  }else{
+    err.textContent='パスワードが違います';
+    document.getElementById('lockInput').value='';updateDots();
+    document.getElementById('lockInput').focus();
+  }
+}
+function changePassword(){
+  const c=prompt('現在のパスワードを入力してください');if(c===null)return;
+  if(c!==getStoredPass()){alert('現在のパスワードが違います');return;}
+  const np=prompt('新しいパスワード（4〜20文字）');if(!np||np.length<4){alert('4文字以上で設定してください');return;}
+  const cf=prompt('新しいパスワード（確認）');if(np!==cf){alert('パスワードが一致しません');return;}
+  localStorage.setItem('lp_lock_pass',np);alert('パスワードを変更しました！');
+}
+
+/* =====================================================
+   SETTINGS MODAL
+===================================================== */
+function openSettings(){document.getElementById('settingsModal').classList.add('open');renderThemeGrid();}
+function closeSettings(){document.getElementById('settingsModal').classList.remove('open');}
+document.getElementById('settingsModal').addEventListener('click',function(e){if(e.target===this)closeSettings();});
+function openVaultWithLock(){openLockOverlay(()=>{openVaultPage();});}
+
+/* =====================================================
+   DATA LIST
+===================================================== */
+function openDataListDirect(){closeSettings();renderDataList();document.getElementById('dataModal').classList.add('open');}
+function openDataList(){openDataListDirect();}
+function closeDataList(){document.getElementById('dataModal').classList.remove('open');}
+document.getElementById('dataModal').addEventListener('click',function(e){if(e.target===this)closeDataList();});
+function renderDataList(){
+  const body=document.getElementById('dataListBody');body.innerHTML='';
+  const cats=getCats();const data=loadData();let total=0;
+  cats.forEach(cat=>{
+    const entries=data[cat.id]||[];if(!entries.length)return;total+=entries.length;
+    const group=document.createElement('div');group.className='dl-cat-group';
+    const hdr=document.createElement('div');hdr.className='dl-cat-hdr';
+    hdr.innerHTML=`<span class="dl-cat-icon">${cat.icon}</span><span class="dl-cat-label">${cat.label}</span><span class="dl-cat-count">${entries.length}</span>`;
+    group.appendChild(hdr);
+    entries.forEach((entry,i)=>{
+      const siteName=entry[cat.fields[0]]||'(無題)';
+      let siteUrl='';Object.values(entry).forEach(v=>{if(!siteUrl&&typeof v==='string'&&/^https?:\/\//i.test(v))siteUrl=v;});
+      const el=document.createElement('div');el.className='dl-entry';
+      el.innerHTML=`<div style="flex:1;min-width:0"><div class="dl-entry-name">${esc(siteName)}</div>${siteUrl?`<div class="dl-entry-sub" style="font-family:'JetBrains Mono',monospace;font-size:.62rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(siteUrl)}</div>`:''}</div><button class="dl-del-btn" onclick="dlDel('${cat.id}',${i})">🗑</button>`;
+      group.appendChild(el);
+    });
+    body.appendChild(group);
+  });
+  if(!total)body.innerHTML='<div class="dl-empty">登録されているデータがありません</div>';
+}
+function dlDel(catId,idx){
+  if(!confirm('このエントリを削除しますか？'))return;
+  const entries=getData(catId);entries.splice(idx,1);setData(catId,entries);
+  toast('削除しました');renderDataList();renderAll();
+}
+function changePasswordFromSettings(){closeSettings();changePassword();}
+
+/* =====================================================
+   DATA STORAGE
+===================================================== */
+const DEFAULT_CATEGORIES=[
+  {id:'shopping',label:'🛒 買い物系',        icon:'🛒',fields:['サービス名','ユーザーID','メールアドレス','パスワード','PIN','ログインURL','備考']},
+  {id:'idcard',  label:'🪪 身分証明系',       icon:'🪪',fields:['書類・カード名','番号','有効期限','備考']},
+  {id:'finance', label:'💳 金融系',           icon:'💳',fields:['サービス名','口座番号','カード番号','ユーザーID','パスワード','PIN','ログインURL','備考']},
+  {id:'sns',     label:'💬 SNS系',            icon:'💬',fields:['サービス名','ユーザー名','メールアドレス','パスワード','ログインURL','備考']},
+  {id:'device',  label:'💻 端末系',           icon:'💻',fields:['端末名','PIN','パスワード','Apple ID / Googleアカウント','ログインURL','備考']},
+  {id:'work',    label:'🔑 社内ログイン系',   icon:'🔑',fields:['システム名','社員No.','ユーザー名','パスワード','ログインURL','備考']},
+  {id:'creative',label:'🎨 クリエイティブ系', icon:'🎨',fields:['サービス名','メールアドレス','ライセンスキー','パスワード','ログインURL','備考']},
+  {id:'member',  label:'🎫 メンバーズカード系',icon:'🎫',fields:['店舗・サービス名','会員番号','会員名','電話番号','備考'],type:'member'},
+];
+const SENSITIVE=['パスワード','PIN','カード番号','口座番号','番号','ライセンスキー','社員No.'];
+function loadCatMeta(){try{return JSON.parse(localStorage.getItem('lp_cats')||'null');}catch{return null;}}
+function saveCatMeta(c){localStorage.setItem('lp_cats',JSON.stringify(c));}
+function getCats(){const s=loadCatMeta();return s||DEFAULT_CATEGORIES;}
+function loadData(){try{return JSON.parse(localStorage.getItem('lp_v1')||'{}');}catch{return {};}}
+function saveData(d){localStorage.setItem('lp_v1',JSON.stringify(d));}
+function getData(id){return loadData()[id]||[];}
+function setData(id,entries){const d=loadData();d[id]=entries;saveData(d);}
+
+function addCustomCategory(){
+  const icon=document.getElementById('newCatIcon').value.trim()||'📁';
+  const label=document.getElementById('newCatLabel').value.trim();
+  if(!label){toast('カテゴリ名を入力してください');return;}
+  const cats=getCats();const id='custom_'+Date.now();
+  cats.push({id,label:`${icon} ${label}`,icon,fields:['サービス名','ユーザー名','パスワード','ログインURL','備考'],custom:true});
+  saveCatMeta(cats);
+  document.getElementById('newCatIcon').value='';document.getElementById('newCatLabel').value='';
+  closeSettings();renderAll();toast('カテゴリを追加しました！');
+}
+function deleteCategory(catId){
+  if(!confirm('このカテゴリとすべてのデータを削除しますか？'))return;
+  saveCatMeta(getCats().filter(c=>c.id!==catId));
+  const d=loadData();delete d[catId];saveData(d);renderAll();toast('カテゴリを削除しました');
+}
+
+/* =====================================================
+   FUZZY SEARCH
+===================================================== */
+function toH(s){return s.replace(/[\u30A1-\u30F6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));}
+function toK(s){return s.replace(/[\u3041-\u3096]/g,c=>String.fromCharCode(c.charCodeAt(0)+0x60));}
+const RMAP=[['amazon','アマゾン'],['amaz','アマゾン'],['ama','アマ'],['apple','アップル'],['google','グーグル'],['yahoo','ヤフー'],['twitter','ツイッター'],['instagram','インスタ'],['insta','インスタ'],['facebook','フェイスブック'],['line','ライン'],['rakuten','楽天'],['paypay','ペイペイ'],['docomo','ドコモ'],['softbank','ソフトバンク']];
+const K2R=[['アマゾン','amazon'],['アップル','apple'],['グーグル','google'],['ヤフー','yahoo'],['ツイッター','twitter'],['インスタ','instagram'],['フェイスブック','facebook'],['ライン','line'],['楽天','rakuten'],['ペイペイ','paypay'],['ドコモ','docomo'],['ソフトバンク','softbank'],['ア','a'],['イ','i'],['ウ','u'],['エ','e'],['オ','o'],['カ','ka'],['キ','ki'],['ク','ku'],['ケ','ke'],['コ','ko'],['サ','sa'],['シ','shi'],['ス','su'],['セ','se'],['ソ','so'],['タ','ta'],['チ','chi'],['ツ','tsu'],['テ','te'],['ト','to'],['ナ','na'],['ニ','ni'],['ヌ','nu'],['ネ','ne'],['ノ','no'],['ハ','ha'],['ヒ','hi'],['フ','fu'],['ヘ','he'],['ホ','ho'],['マ','ma'],['ミ','mi'],['ム','mu'],['メ','me'],['モ','mo'],['ヤ','ya'],['ユ','yu'],['ヨ','yo'],['ラ','ra'],['リ','ri'],['ル','ru'],['レ','re'],['ロ','ro'],['ワ','wa'],['ン','n'],['ガ','ga'],['ギ','gi'],['グ','gu'],['ゲ','ge'],['ゴ','go'],['ザ','za'],['ジ','ji'],['ズ','zu'],['ゼ','ze'],['ゾ','zo'],['ダ','da'],['デ','de'],['ド','do'],['バ','ba'],['ビ','bi'],['ブ','bu'],['ベ','be'],['ボ','bo'],['パ','pa'],['ピ','pi'],['プ','pu'],['ペ','pe'],['ポ','po'],['ッ',''],['ー','']];
+function k2r(s){let r=toK(s);K2R.forEach(([k,v])=>{r=r.split(k).join(v);});return r;}
+function fuzzyMatch(text,q){
+  const t=String(text).toLowerCase();q=String(q).toLowerCase().trim();if(!q)return true;
+  const v=new Set([q,toH(q),toK(q)]);const qr=k2r(q);if(qr)v.add(qr);
+  for(const[r,k]of RMAP){if(r.startsWith(q)||q.startsWith(r)||r.startsWith(qr)||qr.startsWith(r)){v.add(k);v.add(toH(k));v.add(r);}}
+  for(const x of v){if(!x)continue;if(t.includes(x)||toH(t).includes(x)||toK(t).includes(x))return true;}
+  return false;
+}
+
+/* =====================================================
+   EXPORT / IMPORT
+===================================================== */
+function exportJSON(){
+  const out={categories:getCats(),entries:loadData(),exportedAt:new Date().toISOString()};
+  dl('loginport_backup.json',JSON.stringify(out,null,2),'application/json');toast('JSONをエクスポートしました');
+}
+function exportCSV(){
+  const cats=getCats();const data=loadData();
+  const rows=[['カテゴリ','フィールド名','値']];
+  cats.forEach(cat=>{(data[cat.id]||[]).forEach(entry=>{Object.entries(entry).forEach(([k,v])=>{rows.push([cat.label,k,v]);});});});
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  dl('loginport_backup.csv','\uFEFF'+csv,'text/csv');toast('CSVをエクスポートしました');
+}
+function dl(name,content,type){
+  const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function importFile(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const text=e.target.result;
+    if(file.name.endsWith('.json'))impJSON(text);
+    else if(file.name.endsWith('.csv'))impCSV(text);
+    else toast('JSON または CSV を選択してください');
+  };
+  reader.readAsText(file,'UTF-8');event.target.value='';
+}
+function impJSON(text){
+  try{const obj=JSON.parse(text);if(obj.categories)saveCatMeta(obj.categories);if(obj.entries)saveData(obj.entries);closeSettings();renderAll();toast('インポートが完了しました！');}
+  catch{toast('JSONの読み込みに失敗しました');}
+}
+function impCSV(text){
+  const clean=text.replace(/^\uFEFF/,'');const lines=clean.split(/\r?\n/).filter(l=>l.trim());
+  const cats=getCats();const data=loadData();
+  lines.slice(1).forEach(line=>{
+    const cols=parseCSV(line);if(cols.length<3)return;
+    const[catLabel,fieldName,value]=cols;const cat=cats.find(c=>c.label===catLabel);if(!cat)return;
+    if(!data[cat.id])data[cat.id]=[];const entries=data[cat.id];
+    const isFirst=['サービス名','書類・カード名','端末名','システム名'].includes(fieldName);
+    if(!entries.length||isFirst)entries.push({});
+    entries[entries.length-1][fieldName]=value;
+  });
+  saveData(data);closeSettings();renderAll();toast('CSVインポートが完了しました！');
+}
+function parseCSV(line){
+  const res=[];let cur='';let inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else{inQ=!inQ;}}
+    else if(ch===','&&!inQ){res.push(cur);cur='';}else{cur+=ch;}
+  }
+  res.push(cur);return res;
+}
+
+/* =====================================================
+   RENDER VAULT
+===================================================== */
+function renderAll(){
+  const c=document.getElementById('categoriesContainer');c.innerHTML='';
+  getCats().forEach((cat,i)=>c.appendChild(buildSection(cat,i)));
+}
+
+function buildSection(cat,catIndex){
+  const cg=getCG(catIndex);
+  const entries=getData(cat.id);
+  const isCol=localStorage.getItem('lp_col_'+cat.id)==='1';
+  const card=document.createElement('div');
+  card.className='cat-card'+(isCol?' collapsed':'');card.dataset.catId=cat.id;
+  card.style.background=`${cg.tint}0.07)`;card.style.borderColor=`${cg.border}0.18)`;
+  const hdr=document.createElement('div');hdr.className='cat-card-header';
+  hdr.innerHTML=`
+    <div class="cat-header-left">
+      <div class="cat-icon-badge" style="background:${cg.tint}0.18);border:1px solid ${cg.border}0.28)">${cat.icon}</div>
+      <span class="cat-title-text" style="color:${cg.text}">${cat.label}</span>
+    </div>
+    <div class="cat-header-mid">
+      <span class="cat-count-badge" style="background:${cg.tint}0.15);color:${cg.accent};border:1px solid ${cg.border}0.3)" id="count-${cat.id}">${entries.length}</span>
+      <span class="cat-collapse-icon" style="color:${cg.accent}">▼</span>
+    </div>
+    <div class="cat-header-right">
+      <button class="cat-add-btn" style="background:${cg.tint}0.18);color:${cg.accent}" onclick="toggleForm('${cat.id}',event)" title="新規追加">＋</button>
+      ${cat.custom?`<button class="del-cat-btn" onclick="event.stopPropagation();deleteCategory('${cat.id}')">🗑</button>`:''}
+    </div>`;
+  hdr.addEventListener('click',function(e){
+    if(e.target.closest('.cat-add-btn,.del-cat-btn'))return;
+    const col=card.classList.toggle('collapsed');
+    localStorage.setItem('lp_col_'+cat.id,col?'1':'0');
+  });
+  card.appendChild(hdr);
+  const body=document.createElement('div');
+  body.className='cat-body'+(isCol?' collapsed-body':'');body.id='list-'+cat.id;
+  body.appendChild(buildForm(cat,cg));
+  if(!entries.length){
+    const empty=document.createElement('div');empty.className='no-results';empty.id='empty-'+cat.id;empty.textContent='まだ登録がありません';body.appendChild(empty);
+  }else{
+    entries.forEach((entry,i)=>body.appendChild(buildCard(cat,entry,i,cg)));
+  }
+  card.appendChild(body);
+  const obs=new MutationObserver(()=>{
+    if(card.classList.contains('collapsed'))body.classList.add('collapsed-body');
+    else body.classList.remove('collapsed-body');
+  });
+  obs.observe(card,{attributes:true,attributeFilter:['class']});
+  return card;
+}
+
+function buildForm(cat,cg){
+  const form=document.createElement('div');
+  form.className='add-form';form.id='form-'+cat.id;
+  form.style.borderColor=`${cg.border}0.3)`;form.style.background=`${cg.tint}0.05)`;
+  cat.fields.forEach(f=>{
+    const row=document.createElement('div');row.className='form-row';
+    const isBig=f==='備考';const isSens=SENSITIVE.includes(f);
+    row.innerHTML=`<div class="form-label">${f}</div>
+      ${isBig?`<textarea data-field="${f}" placeholder="${f}を入力"></textarea>`
+             :`<input type="${isSens?'password':'text'}" data-field="${f}" placeholder="${f}を入力">`}`;
+    form.appendChild(row);
+  });
+  const btns=document.createElement('div');btns.className='form-btns';
+  btns.innerHTML=`<button class="btn-cancel" onclick="toggleForm('${cat.id}',event)">キャンセル</button><button class="btn-save" onclick="saveEntry('${cat.id}')">保存する</button>`;
+  form.appendChild(btns);return form;
+}
+
+function buildCard(cat,entry,idx,cg){
+  const card=document.createElement('div');
+  card.className='entry-card';
+  card.dataset.search=Object.values(entry).join(' ')+' '+Object.keys(entry).join(' ');
+  card.style.borderLeftColor=cg.accent;card.style.borderColor=`${cg.border}0.18)`;
+  const name=esc(entry[cat.fields[0]]||'(無題)');
+  let rows='';
+  const url=findUrl(entry);
+  cat.fields.forEach(f=>{
+    if(!entry[f])return;
+    const isSens=SENSITIVE.includes(f);
+    const safe=entry[f].replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const disp=esc(entry[f]);
+    if(isSens){rows+=`<div class="entry-row"><span class="label" style="color:${cg.accent};border-color:${cg.border}0.3);background:${cg.tint}0.08)">${f}</span><span class="masked" data-val="${entry[f].replace(/"/g,'&quot;')}">••••••</span><button class="toggle-pw" onclick="toggleMask(this)">表示</button><button class="copy-btn" onclick="copyText('${safe}')">コピー</button></div>`;}
+    else{rows+=`<div class="entry-row"><span class="label" style="color:${cg.accent};border-color:${cg.border}0.3);background:${cg.tint}0.08)">${f}</span><span class="value">${disp}</span><button class="copy-btn" onclick="copyText('${safe}')">コピー</button></div>`;}
+  });
+
+  /* ログインボタン（URLがある場合） */
+  const isMember = cat.type==='member'||cat.id==='member';
+  const loginBtnHtml = isMember
+    ? `<button class="entry-login-btn" style="background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.3);color:#4ade80" onclick="entryLogin('${cat.id}',${idx})">🎫 番号をコピー</button>`
+    : url ? `<button class="entry-login-btn" onclick="entryLogin('${cat.id}',${idx})">🔓 このサイトにログイン</button>` : '';
+
+  card.innerHTML=`
+    <div class="entry-name" onclick="toggleCard(this)">
+      <span>${name}<span class="entry-toggle-icon">▶</span></span>
+      <div class="entry-actions">
+        <button class="edit-btn" onclick="event.stopPropagation();toggleInlineEdit('${cat.id}',${idx})">✏️ 編集</button>
+        <button class="del-btn" onclick="event.stopPropagation();deleteEntry('${cat.id}',${idx})">🗑</button>
+      </div>
+    </div>
+    <div class="entry-body">
+      ${rows}
+      ${loginBtnHtml}
+      <div class="inline-edit-form" id="ie-${cat.id}-${idx}">
+        ${cat.fields.map(f=>{const isBig=f==='備考';const isSens=SENSITIVE.includes(f);const val=(entry[f]||'').replace(/"/g,'&quot;');return`<div class="form-row"><div class="form-label">${f}</div>${isBig?`<textarea data-field="${f}">${entry[f]||''}</textarea>`:`<input type="${isSens?'password':'text'}" data-field="${f}" value="${val}">`}</div>`;}).join('')}
+        <div class="form-btns">
+          <button class="btn-cancel" onclick="closeIE('${cat.id}',${idx})">キャンセル</button>
+          <button class="btn-save" onclick="saveIE('${cat.id}',${idx})">更新する</button>
+        </div>
+      </div>
+    </div>`;
+  return card;
+}
+
+/* エントリ内のログインボタン */
+function entryLogin(catId,idx){
+  const cat=getCats().find(c=>c.id===catId);
+  const entry=getData(catId)[idx];
+  if(!cat||!entry)return;
+
+  /* メンバー系はシンプルパネルを開く */
+  if(cat.type==='member'||cat.id==='member'){
+    openMemberPanel(catId,idx);
+    return;
+  }
+
+  const siteName=entry[cat.fields[0]]||'(無題)';
+  const url=findUrl(entry)||'';
+  const fields=[];
+  cat.fields.forEach(f=>{
+    if(!entry[f])return;
+    fields.push({label:f, value:entry[f], sensitive:SENSITIVE.includes(f)});
+  });
+  openLauncher(siteName, url, cat.icon, fields);
+
+}
+
+function toggleInlineEdit(catId,idx){
+  const form=document.getElementById(`ie-${catId}-${idx}`);
+  const eb=form.closest('.entry-body');
+  eb.classList.add('open');eb.previousElementSibling.classList.add('opened');
+  form.classList.toggle('open');
+  if(form.classList.contains('open'))form.querySelector('input,textarea')?.focus();
+}
+function closeIE(catId,idx){document.getElementById(`ie-${catId}-${idx}`).classList.remove('open');}
+function saveIE(catId,idx){
+  const form=document.getElementById(`ie-${catId}-${idx}`);
+  const entries=getData(catId);const entry={};
+  form.querySelectorAll('[data-field]').forEach(el=>{if(el.value.trim())entry[el.dataset.field]=el.value.trim();});
+  if(!Object.keys(entry).length){toast('内容を入力してください');return;}
+  entries[idx]=entry;setData(catId,entries);toast('更新しました！');renderAll();filterEntries();
+}
+function toggleMask(btn){
+  const span=btn.previousElementSibling;
+  if(span.textContent==='••••••'){span.textContent=span.dataset.val;btn.textContent='非表示';}
+  else{span.textContent='••••••';btn.textContent='表示';}
+}
+function toggleCard(nameEl){nameEl.nextElementSibling.classList.toggle('open');nameEl.classList.toggle('opened');}
+function toggleForm(catId,e){
+  e.stopPropagation();const form=document.getElementById('form-'+catId);
+  form.classList.toggle('open');
+  if(form.classList.contains('open')){form.querySelectorAll('input,textarea').forEach(i=>i.value='');form.querySelector('input,textarea')?.focus();}
+}
+function saveEntry(catId){
+  const form=document.getElementById('form-'+catId);const entry={};
+  form.querySelectorAll('[data-field]').forEach(el=>{if(el.value.trim())entry[el.dataset.field]=el.value.trim();});
+  if(!Object.keys(entry).length){toast('内容を入力してください');return;}
+  const entries=getData(catId);entries.unshift(entry);setData(catId,entries);
+  toast('登録しました！');renderAll();filterEntries();
+}
+function deleteEntry(catId,idx){
+  if(!confirm('このエントリを削除しますか？'))return;
+  const entries=getData(catId);entries.splice(idx,1);setData(catId,entries);
+  toast('削除しました');renderAll();filterEntries();
+}
+function filterEntries(){
+  const q=document.getElementById('searchInput').value.trim();
+  getCats().forEach(cat=>{
+    const sec=document.querySelector(`[data-cat-id="${cat.id}"]`);
+    const list=document.getElementById('list-'+cat.id);if(!list)return;
+    const cards=list.querySelectorAll('.entry-card');let visible=0;
+    cards.forEach(card=>{
+      const match=fuzzyMatch(card.dataset.search||card.textContent,q);
+      card.classList.toggle('hidden',!match);
+      if(match){visible++;
+        if(q){const eb=card.querySelector('.entry-body');const ne=card.querySelector('.entry-name');if(eb&&!eb.classList.contains('open')){eb.classList.add('open');ne.classList.add('opened');}}
+        else{const eb=card.querySelector('.entry-body');const ne=card.querySelector('.entry-name');if(eb){eb.classList.remove('open');ne.classList.remove('opened');}}
+      }
+    });
+    const empty=document.getElementById('empty-'+cat.id);
+    if(empty)empty.classList.toggle('hidden',getData(cat.id).length>0||!!q);
+    if(sec)sec.classList.toggle('hidden',!!q&&!visible);
+    if(q&&visible&&sec){sec.classList.remove('collapsed');list.classList.remove('collapsed-body');}
+  });
+}
+
+/* =====================================================
+   UTILS
+===================================================== */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200);}
+function copyText(text){navigator.clipboard.writeText(text).then(()=>toast('コピーしました！'));}
+const backTop=document.getElementById('backTop');
+window.addEventListener('scroll',()=>backTop.classList.toggle('visible',window.scrollY>300));
+function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'});}
+
+/* =====================================================
+   INIT
+===================================================== */
+window.addEventListener('load',function(){
+  const t=localStorage.getItem('lp_theme')||'ocean';
+  if(t!=='ocean')document.documentElement.dataset.theme=t;
+  if(!loadCatMeta())saveCatMeta(DEFAULT_CATEGORIES);
+  renderAll();
+});
+
+/* =====================================================
+   SERVICE DICT MANAGEMENT
+===================================================== */
+const DICT_CAT_LABELS={
+  shopping:'🛒 買い物系',finance:'💳 金融系',sns:'💬 SNS系',
+  device:'💻 端末系',work:'🔑 社内ログイン系',creative:'🎨 クリエイティブ系',idcard:'🪪 身分証明系'
+};
+const DICT_CAT_ICONS={
+  shopping:'🛒',finance:'💳',sns:'💬',device:'💻',work:'🔑',creative:'🎨',idcard:'🪪'
+};
+
+/* カスタム辞書をlocalStorageに保存 */
+function loadCustomDict(){try{return JSON.parse(localStorage.getItem('lp_dict')||'[]');}catch{return[];}}
+function saveCustomDict(d){localStorage.setItem('lp_dict',JSON.stringify(d));}
+
+/* 全辞書（組み込み＋カスタム）を返す */
+function getFullServiceDB(){
+  return [...SERVICE_DB,...loadCustomDict()];
+}
+
+function openServiceDict(){
+  closeSettings();
+  renderDictList();
+  document.getElementById('dictModal').classList.add('open');
+}
+function closeServiceDict(){
+  document.getElementById('dictModal').classList.remove('open');
+  ['dictName','dictAliases','dictUrl','dictSearchInput'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  /* フォームを閉じた状態に戻す */
+  const form=document.getElementById('dictAddForm');
+  const btn=document.getElementById('dictAddToggleBtn');
+  if(form)form.style.display='none';
+  if(btn)btn.classList.remove('open');
+  document.getElementById('dictSearchClear')?.classList.remove('visible');
+  filterDictList();
+}
+document.getElementById('dictModal').addEventListener('click',function(e){if(e.target===this)closeServiceDict();});
+
+function renderDictList(){
+  const list=document.getElementById('dictList');
+  list.innerHTML='';
+  const customDict=loadCustomDict();
+
+  /* カテゴリ別にグループ化（組み込み＋カスタム） */
+  const groups={};
+  /* 組み込み（非表示除外） */
+  const hidden=loadHiddenBuiltin();
+  SERVICE_DB.forEach((s,i)=>{
+    if(hidden.includes(i))return;
+    if(!groups[s.cat])groups[s.cat]=[];
+    groups[s.cat].push({...s,_idx:i,_custom:false});
+  });
+  /* カスタム */
+  customDict.forEach((s,i)=>{
+    const cat=s.cat||'shopping';
+    if(!groups[cat])groups[cat]=[];
+    groups[cat].push({...s,_idx:i,_custom:true});
+  });
+
+  /* カテゴリ順に描画 */
+  const catOrder=['shopping','finance','sns','device','creative','idcard','work'];
+  catOrder.forEach(catId=>{
+    const items=groups[catId];if(!items||!items.length)return;
+    const label=document.createElement('div');
+    label.className='dict-section-label';
+    label.innerHTML=`<span>${DICT_CAT_LABELS[catId]||catId}</span><span class="dict-section-count">${items.length}件</span>`;
+    list.appendChild(label);
+    items.forEach(s=>{
+      const el=document.createElement('div');
+      el.className='dict-item'+(s._custom?' custom-item':'');
+      const aliasText=s.aliases?s.aliases.slice(0,3).join('・'):'';
+      const nameToken='name:'+s.name.toLowerCase();
+      const aliasTokens=(s.aliases||[]).map(a=>'alias:'+a.toLowerCase()).join(' ');
+      el.dataset.search=nameToken+' '+aliasTokens;
+      el.innerHTML=`
+        <div class="dict-item-icon" style="cursor:pointer" onclick="dictGo('${s.url.replace(/'/g,"\\'")}','${esc(s.name)}')">${s.icon||DICT_CAT_ICONS[s.cat]||'🔗'}</div>
+        <div class="dict-item-texts" style="cursor:pointer" onclick="dictGo('${s.url.replace(/'/g,"\\'")}','${esc(s.name)}')">
+          <div class="dict-item-name">${esc(s.name)}</div>
+          ${aliasText?`<div class="dict-item-aliases">${esc(aliasText)}</div>`:''}
+          <div class="dict-item-url">${esc(s.url)}</div>
+        </div>
+        ${s._custom
+          ? `<button class="dict-del-btn" onclick="deleteCustomDict(${s._idx})" title="削除">🗑</button>`
+          : `<button class="dict-del-btn dict-del-builtin" onclick="deleteBuiltinDict(${s._idx})" title="非表示にする">🗑</button>`
+        }`;
+      list.appendChild(el);
+    });
+  });
+
+  /* 未分類カスタム */
+  customDict.forEach((s,i)=>{
+    if(catOrder.includes(s.cat))return;
+    const el=document.createElement('div');
+    el.className='dict-item custom-item';
+    const nameToken2='name:'+s.name.toLowerCase();
+    const aliasTokens2=(s.aliases||[]).map(a=>'alias:'+a.toLowerCase()).join(' ');
+    el.dataset.search=nameToken2+' '+aliasTokens2;
+    el.innerHTML=`
+      <div class="dict-item-icon" style="cursor:pointer" onclick="dictGo('${s.url.replace(/'/g,"\\'")}','${esc(s.name)}')">${s.icon||'🔗'}</div>
+      <div class="dict-item-texts" style="cursor:pointer" onclick="dictGo('${s.url.replace(/'/g,"\\'")}','${esc(s.name)}')">
+        <div class="dict-item-name">${esc(s.name)}</div>
+        <div class="dict-item-url">${esc(s.url)}</div>
+      </div>
+      <button class="dict-del-btn" onclick="deleteCustomDict(${i})">🗑</button>`;
+    list.appendChild(el);
+  });
+}
+
+function addDictEntry(){
+  const name=document.getElementById('dictName').value.trim();
+  const aliasRaw=document.getElementById('dictAliases').value.trim();
+  const url=document.getElementById('dictUrl').value.trim();
+  const cat=document.getElementById('dictCat').value;
+
+  if(!name){toast('サービス名を入力してください');return;}
+  if(!url||!/^https?:\/\//i.test(url)){toast('有効なURLを入力してください（https://...）');return;}
+
+  const aliases=aliasRaw
+    ? [name.toLowerCase(),...aliasRaw.split(/[,、，\s]+/).map(a=>a.trim().toLowerCase()).filter(Boolean)]
+    : [name.toLowerCase()];
+
+  const entry={
+    name,aliases,url,cat,
+    icon:DICT_CAT_ICONS[cat]||'🔗',
+    _custom:true
+  };
+  const dict=loadCustomDict();
+  dict.push(entry);
+  saveCustomDict(dict);
+
+  /* 入力クリア＆フォームを閉じる */
+  ['dictName','dictAliases','dictUrl'].forEach(id=>{document.getElementById(id).value='';});
+  const form=document.getElementById('dictAddForm');
+  const btn=document.getElementById('dictAddToggleBtn');
+  if(form)form.style.display='none';
+  if(btn)btn.classList.remove('open');
+  renderDictList();
+  toast(`「${name}」を辞書に追加しました`);
+}
+
+function deleteCustomDict(idx){
+  const dict=loadCustomDict();
+  const name=dict[idx]?.name||'このサービス';
+  if(!confirm(`「${name}」を辞書から削除しますか？`))return;
+  dict.splice(idx,1);
+  saveCustomDict(dict);
+  renderDictList();
+  toast('削除しました');
+}
+
+/* 内蔵サービスを非表示（hidden list に追加） */
+function loadHiddenBuiltin(){try{return JSON.parse(localStorage.getItem('lp_dict_hidden')||'[]');}catch{return[];}}
+function saveHiddenBuiltin(d){localStorage.setItem('lp_dict_hidden',JSON.stringify(d));}
+
+function deleteBuiltinDict(idx){
+  const name=SERVICE_DB[idx]?.name||'このサービス';
+  if(!confirm(`「${name}」を辞書から非表示にしますか？\n（再追加は手動で行えます）`))return;
+  const hidden=loadHiddenBuiltin();
+  if(!hidden.includes(idx))hidden.push(idx);
+  saveHiddenBuiltin(hidden);
+  renderDictList();
+  toast(`「${name}」を非表示にしました`);
+}
+
+/* 辞書アイテムタップでサイトへ飛ぶ */
+function dictGo(url,name){
+  const {fields,icon}=findRegisteredFields(name);
+  openLauncher(name, url, icon||'🔗', fields);
+}
+
+/* 辞書内検索（サービス名・alias読みの先頭一致） */
+function filterDictList(){
+  const q=document.getElementById('dictSearchInput').value.trim().toLowerCase();
+  const clear=document.getElementById('dictSearchClear');
+  clear.classList.toggle('visible',q.length>0);
+
+  const items=document.querySelectorAll('#dictList .dict-item');
+  const labels=document.querySelectorAll('#dictList .dict-section-label');
+
+  if(!q){
+    items.forEach(el=>el.classList.remove('hidden'));
+    labels.forEach(el=>el.classList.remove('hidden'));
+    return;
+  }
+
+  labels.forEach(el=>{el._visible=false;});
+
+  items.forEach(el=>{
+    const rawTokens=(el.dataset.search||'').split(' ').filter(Boolean);
+    const qL=q.toLowerCase();
+    const qH=toH(qL);
+    const qK=toK(qL);
+    const match=rawTokens.some(t=>{
+      if(t.startsWith('name:')){
+        /* サービス名：先頭一致 */
+        const v=t.slice(5);
+        const vH=toH(v);
+        return v.startsWith(qL)||v.startsWith(qH)||v.startsWith(qK)||vH.startsWith(qL)||vH.startsWith(qH);
+      }
+      if(t.startsWith('alias:')){
+        const v=t.slice(6);
+        /* 英字のみのaliasは除外 */
+        if(/^[a-z0-9]+$/.test(v)) return false;
+        const vH=toH(v);
+        return v.startsWith(qL)||v.startsWith(qH)||v.startsWith(qK)||vH.startsWith(qL)||vH.startsWith(qH);
+      }
+      return false;
+    });
+    el.classList.toggle('hidden',!match);
+    if(match){
+      let prev=el.previousElementSibling;
+      while(prev){
+        if(prev.classList.contains('dict-section-label')){prev._visible=true;break;}
+        prev=prev.previousElementSibling;
+      }
+    }
+  });
+
+  labels.forEach(el=>el.classList.toggle('hidden',!el._visible));
+}
+
+function clearDictSearch(){
+  document.getElementById('dictSearchInput').value='';
+  filterDictList();
+}
+
+function dictScrollTop(){
+  document.getElementById('dictBody').scrollTo({top:0,behavior:'smooth'});
+}
+
+/* 追加フォームのトグル */
+function toggleDictAddForm(){
+  const form=document.getElementById('dictAddForm');
+  const btn=document.getElementById('dictAddToggleBtn');
+  const isOpen=form.style.display!=='none';
+  form.style.display=isOpen?'none':'flex';
+  btn.classList.toggle('open',!isOpen);
+  if(!isOpen){
+    form.querySelector('input')?.focus();
+  } else {
+    /* 閉じる時は入力クリア */
+    ['dictName','dictAliases','dictUrl'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.value='';
+    });
+  }
+}
+</script>
+</body>
+</html>

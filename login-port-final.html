@@ -48,7 +48,7 @@ document.getElementById('touch-icon').href=c.toDataURL('image/png');
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Login Port">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
+
 <style>
 :root{
   --bg-a:#04090f;--bg-b:#080f1c;--bg-c:#0c182e;
@@ -633,23 +633,36 @@ body::before{
 /* QR MODAL */
 .qr-modal{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s;}
 .qr-modal.open{opacity:1;pointer-events:auto}
-.qr-modal-box{background:#080f1c;border:1px solid var(--accent-border);border-radius:22px;width:100%;max-width:320px;padding:26px 22px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.7);}
-.qr-modal-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.14em;color:#fff;margin-bottom:5px;text-transform:uppercase;}
-.qr-modal-sub{font-size:.7rem;color:var(--text-dim);margin-bottom:17px;font-family:'Outfit',sans-serif}
-#qrVideo{width:100%;height:100%;border-radius:12px;background:#000;object-fit:cover;display:none;}
+.qr-modal-box{background:#080f1c;border:1px solid var(--accent-border);border-radius:22px;width:100%;max-width:320px;padding:22px 20px 20px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.7);}
+.qr-modal-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.14em;color:#fff;margin-bottom:4px;text-transform:uppercase;}
+.qr-modal-sub{font-size:.68rem;color:var(--text-dim);margin-bottom:14px;font-family:'Outfit',sans-serif}
+/* スキャンフレーム */
+.qr-scan-frame{position:relative;width:100%;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:1/1;margin-bottom:6px;touch-action:pinch-zoom;}
+#qrVideo{width:100%;height:100%;object-fit:cover;display:none;border-radius:12px;touch-action:pinch-zoom;}
 #qrCanvas{display:none}
-.qr-status{font-size:.76rem;color:var(--accent);margin:8px 0 4px;font-family:'Outfit',sans-serif;min-height:18px}
+/* スキャンライン */
+.qr-scan-line{position:absolute;left:8%;right:8%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 8px var(--accent);animation:qrScan 2s ease-in-out infinite;display:none;}
+.qr-scan-frame.scanning .qr-scan-line{display:block;}
+@keyframes qrScan{0%{top:10%;}50%{top:85%;}100%{top:10%;}}
+/* 四隅マーカー */
+.qr-corner{position:absolute;width:22px;height:22px;border-color:var(--accent);border-style:solid;box-shadow:0 0 6px var(--accent);}
+.qr-corner.tl{top:8px;left:8px;border-width:3px 0 0 3px;border-radius:3px 0 0 0;}
+.qr-corner.tr{top:8px;right:8px;border-width:3px 3px 0 0;border-radius:0 3px 0 0;}
+.qr-corner.bl{bottom:8px;left:8px;border-width:0 0 3px 3px;border-radius:0 0 0 3px;}
+.qr-corner.br{bottom:8px;right:8px;border-width:0 3px 3px 0;border-radius:0 0 3px 0;}
+/* ステータス */
+.qr-status{font-size:.72rem;color:var(--accent);margin:4px 0 8px;font-family:'Outfit',sans-serif;min-height:18px;line-height:1.4;}
+/* 撮影ボタン */
 .qr-capture-btn{
-  width:100%;padding:15px;border-radius:14px;border:none;cursor:pointer;
+  width:100%;padding:14px;border-radius:13px;border:none;cursor:pointer;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#fff;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;
-  letter-spacing:.06em;margin-bottom:10px;margin-top:4px;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:opacity .15s;
-  box-shadow:0 4px 18px rgba(79,195,247,.35);
+  color:#fff;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:700;
+  letter-spacing:.06em;margin-bottom:8px;
+  display:none;align-items:center;justify-content:center;gap:7px;
+  transition:opacity .15s,background .2s;
+  box-shadow:0 4px 16px rgba(79,195,247,.35);
 }
-.qr-capture-btn:active{opacity:.8;transform:scale(.98)}
-.qr-capture-icon{font-size:1.2rem}
+.qr-capture-btn:active{opacity:.8}
 .qr-close{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--text-dim);border-radius:12px;padding:11px;font-family:'Outfit',sans-serif;font-size:.85rem;cursor:pointer;transition:all .15s;}
 /* QR スキャンフレーム */
 .qr-scan-frame{position:relative;width:100%;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:1/1;margin-bottom:4px;}
@@ -970,7 +983,7 @@ body::before{
 <div class="qr-modal" id="qrModal">
   <div class="qr-modal-box">
     <div class="qr-modal-title">QR Scan</div>
-    <div class="qr-modal-sub">URLが含まれるQRコードをカメラに向けてください</div>
+    <div class="qr-modal-sub">QRコードをカメラに向けてください</div>
     <div class="qr-scan-frame" id="qrScanFrame">
       <video id="qrVideo" playsinline autoplay></video>
       <div class="qr-scan-line"></div>
@@ -981,9 +994,7 @@ body::before{
     </div>
     <canvas id="qrCanvas"></canvas>
     <div class="qr-status" id="qrStatus">カメラを起動中...</div>
-    <button class="qr-capture-btn" id="qrCaptureBtn" onclick="qrCapture()" style="display:none">
-      <span class="qr-capture-icon">📷</span> 読み取る
-    </button>
+    <button class="qr-capture-btn" id="qrCaptureBtn" onclick="qrCapture()">📷 読み取る</button>
     <button class="qr-close" onclick="closeQR()">閉じる</button>
   </div>
 </div>
@@ -1866,25 +1877,30 @@ function doWebSearch(){
 }
 
 /* =====================================================
-   QR SCANNER
+   QR SCANNER（BarcodeDetector対応・CDN不要）
 ===================================================== */
-let qrStream=null,qrTimer=null,_qrDetected=false,_qrAutoTimer=null;
+let _qrStream=null,_qrTimer=null,_qrDetected=false;
 
 function openQR(){
   _qrDetected=false;
+  const btn=document.getElementById('qrCaptureBtn');
+  btn.style.display='none';
+  btn.textContent='📷 読み取る';
+  btn.style.background='';
+  document.getElementById('qrScanFrame').style.touchAction='pinch-zoom';
   document.getElementById('qrModal').classList.add('open');
   document.getElementById('qrStatus').textContent='カメラを起動中...';
-  document.getElementById('qrCaptureBtn').style.display='none';
-  startCamera();
+  startQRCamera();
 }
+
 function closeQR(){
   document.getElementById('qrModal').classList.remove('open');
-  stopCamera();
+  stopQRCamera();
 }
-function stopCamera(){
-  if(qrTimer){clearInterval(qrTimer);qrTimer=null;}
-  if(_qrAutoTimer){clearTimeout(_qrAutoTimer);_qrAutoTimer=null;}
-  if(qrStream){qrStream.getTracks().forEach(t=>t.stop());qrStream=null;}
+
+function stopQRCamera(){
+  if(_qrTimer){clearInterval(_qrTimer);_qrTimer=null;}
+  if(_qrStream){_qrStream.getTracks().forEach(t=>t.stop());_qrStream=null;}
   const video=document.getElementById('qrVideo');
   video.style.display='none';
   video.srcObject=null;
@@ -1892,101 +1908,118 @@ function stopCamera(){
   document.getElementById('qrCaptureBtn').style.display='none';
 }
 
-/* 撮影ボタンで手動読み取り */
-function qrCapture(){
-  const video=document.getElementById('qrVideo');
-  const canvas=document.getElementById('qrCanvas');
-  if(!video||video.readyState!==video.HAVE_ENOUGH_DATA){
-    toast('カメラの準備中です...');return;
-  }
-  canvas.width=video.videoWidth;
-  canvas.height=video.videoHeight;
-  const ctx=canvas.getContext('2d');
-  ctx.drawImage(video,0,0,canvas.width,canvas.height);
-  const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
-
-  if(typeof jsQR==='undefined'){toast('ライブラリ読み込み中...');return;}
-
-  /* まず標準で試す */
-  let code=jsQR(imageData.data,imageData.width,imageData.height,{inversionAttempts:'dontInvert'});
-  /* ダメなら反転も試す */
-  if(!code||!code.data){
-    code=jsQR(imageData.data,imageData.width,imageData.height,{inversionAttempts:'attemptBoth'});
-  }
-
-  if(code&&code.data){
-    _qrDetected=true;
-    handleQRResult(code.data);
-  }else{
-    /* 読み取り失敗フィードバック */
-    const btn=document.getElementById('qrCaptureBtn');
-    const orig=btn.innerHTML;
-    btn.innerHTML='❌ 読み取れませんでした';
-    btn.style.background='rgba(248,113,113,.3)';
-    setTimeout(()=>{
-      btn.innerHTML=orig;
-      btn.style.background='';
-    },1200);
-    document.getElementById('qrStatus').textContent='QRコードを枠内に合わせて再度タップ';
-  }
-}
-
-async function startCamera(){
+async function startQRCamera(){
+  const statusEl=document.getElementById('qrStatus');
   try{
     const stream=await navigator.mediaDevices.getUserMedia({
       video:{facingMode:'environment',width:{ideal:1280},height:{ideal:1280}}
     });
-    qrStream=stream;
+    _qrStream=stream;
     const video=document.getElementById('qrVideo');
-    video.srcObject=stream;video.style.display='block';
+    video.srcObject=stream;
+    video.style.display='block';
     document.getElementById('qrScanFrame').classList.add('scanning');
 
-    /* カメラ起動後1秒で撮影ボタンを表示 */
-    setTimeout(()=>{
+    video.onloadedmetadata=function(){
       document.getElementById('qrCaptureBtn').style.display='flex';
-      document.getElementById('qrStatus').textContent='QRコードを枠に合わせて「読み取る」をタップ';
-    },1000);
+      statusEl.textContent='QRを枠内に合わせて「読み取る」をタップ';
+    };
 
-    const canvas=document.getElementById('qrCanvas');
-    const ctx=canvas.getContext('2d');
-
-    /* バックグラウンドで自動検出も継続（明確なQRなら自動で反応） */
-    qrTimer=setInterval(()=>{
-      if(_qrDetected)return;
-      if(!video||video.readyState!==video.HAVE_ENOUGH_DATA)return;
-      if(video.videoWidth===0||video.videoHeight===0)return;
-      canvas.width=video.videoWidth;canvas.height=video.videoHeight;
-      ctx.drawImage(video,0,0,canvas.width,canvas.height);
-      const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
-      if(typeof jsQR==='undefined')return;
-      const code=jsQR(imageData.data,imageData.width,imageData.height,{inversionAttempts:'dontInvert'});
-      if(code&&code.data){
-        _qrDetected=true;
-        /* 自動検出成功 */
-        document.getElementById('qrStatus').textContent='✅ 自動検出！';
-        setTimeout(()=>handleQRResult(code.data),200);
-      }
-    },500);
+    if('BarcodeDetector' in window){
+      const detector=new BarcodeDetector({formats:['qr_code']});
+      _qrTimer=setInterval(async()=>{
+        if(_qrDetected)return;
+        if(!video||video.readyState!==video.HAVE_ENOUGH_DATA)return;
+        try{
+          const codes=await detector.detect(video);
+          if(codes.length>0&&codes[0].rawValue){
+            _qrDetected=true;
+            statusEl.textContent='✅ 自動検出！';
+            setTimeout(()=>handleQRResult(codes[0].rawValue),150);
+          }
+        }catch(e){}
+      },500);
+    }
 
   }catch(err){
     document.getElementById('qrScanFrame').classList.remove('scanning');
-    if(err.name==='NotAllowedError'){document.getElementById('qrStatus').textContent='カメラのアクセスが拒否されました';}
-    else if(err.name==='NotFoundError'){document.getElementById('qrStatus').textContent='カメラが見つかりません';}
-    else{document.getElementById('qrStatus').textContent='カメラへのアクセスに失敗しました';}
+    if(err.name==='NotAllowedError'){
+      statusEl.textContent='⚠️ カメラのアクセスを許可してください';
+    }else{
+      statusEl.textContent='⚠️ カメラの起動に失敗しました';
+    }
+  }
+}
+
+async function qrCapture(){
+  const video=document.getElementById('qrVideo');
+  const canvas=document.getElementById('qrCanvas');
+  const statusEl=document.getElementById('qrStatus');
+  const btn=document.getElementById('qrCaptureBtn');
+
+  if(!video||video.readyState!==video.HAVE_ENOUGH_DATA||video.videoWidth===0){
+    statusEl.textContent='カメラ準備中... もう少しお待ちください';
+    return;
+  }
+
+  canvas.width=video.videoWidth;
+  canvas.height=video.videoHeight;
+  const ctx=canvas.getContext('2d');
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+
+  let result=null;
+
+  if('BarcodeDetector' in window){
+    try{
+      const detector=new BarcodeDetector({formats:['qr_code']});
+      const codes=await detector.detect(canvas);
+      if(codes.length>0)result=codes[0].rawValue;
+    }catch(e){}
+
+    if(!result){
+      try{
+        const blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',0.95));
+        const bmp=await createImageBitmap(blob);
+        const detector=new BarcodeDetector({formats:['qr_code']});
+        const codes=await detector.detect(bmp);
+        if(codes.length>0)result=codes[0].rawValue;
+      }catch(e){}
+    }
+  }
+
+  if(result){
+    _qrDetected=true;
+    btn.textContent='✅ 成功！';
+    statusEl.textContent='✅ 読み取り成功！';
+    setTimeout(()=>handleQRResult(result),200);
+  }else{
+    btn.textContent='❌ 読み取れませんでした';
+    btn.style.background='rgba(248,113,113,.5)';
+    statusEl.textContent='もっと近づけるか、明るい場所で再度タップ';
+    setTimeout(()=>{
+      btn.textContent='📷 読み取る';
+      btn.style.background='';
+      statusEl.textContent='QRを枠内に合わせて「読み取る」をタップ';
+    },1800);
   }
 }
 
 function handleQRResult(text){
-  stopCamera();closeQR();
+  stopQRCamera();
+  closeQR();
   if(/^https?:\/\//i.test(text)){
     toast('✅ QR読み取り完了 → 移動します');
-    setTimeout(()=>{const w=window.open(text,'_blank');if(!w)window.location.href=text;},300);
+    setTimeout(()=>{
+      const w=window.open(text,'_blank');
+      if(!w)window.location.href=text;
+    },300);
   }else{
     document.getElementById('webSearchInput').value=text;
     toast('✅ QR: '+text);
     onHomeSearch();
   }
 }
+
 document.getElementById('qrModal').addEventListener('click',function(e){if(e.target===this)closeQR();});
 
 /* =====================================================
